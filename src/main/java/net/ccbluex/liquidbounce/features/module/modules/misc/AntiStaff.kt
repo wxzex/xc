@@ -7,10 +7,10 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.ui.client.hud.HUD
+import net.ccbluex.liquidbounce.ui.client.hud.HUD.addNotification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
-import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.ClientUtils.displayChatMessage
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.ServerUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
@@ -18,61 +18,48 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.entity.Entity
 import net.minecraft.network.play.server.*
-import kotlin.concurrent.thread
 
 object AntiStaff : Module("AntiStaff", ModuleCategory.MISC) {
-
-class AntiStaff {
+    private val notify = BoolValue("Notify", true)
+    private val chat = BoolValue("Chat", true)
+    private val leave = BoolValue("Leave", true)
     private var staffs = mutableListOf<String>()
     private var mushmcstaffs = mutableListOf<String>()
     private var hypixelstaffs = mutableListOf<String>()
     private var gommehdstaffs = mutableListOf<String>()
     private var gamsterstaffs = mutableListOf<String>()
-
-
     private var staffsInWorld = mutableListOf<String>()
-
     private var bmcStaffList: String = "${LiquidBounce.CLIENT_CLOUD}/staffs.txt"
     private var mushStaffList: String = "${LiquidBounce.CLIENT_CLOUD}/mushstaffs.txt"
     private var hypixelStaffList: String = "${LiquidBounce.CLIENT_CLOUD}/hypixelstaffs.txt"
     private var gommeHDStaffList: String = "${LiquidBounce.CLIENT_CLOUD}/gommehdstaffs.txt"
     private var gamsterStaffList: String = "${LiquidBounce.CLIENT_CLOUD}/gamsterstaffs.txt"
 
-
-
-    private val notify = BoolValue("Notify", true)
-    private val chat = BoolValue("Chat", true)
-    private val leave = BoolValue("Leave", true)
-
     private val onBMC: Boolean
-        get() = !mc.isSingleplayer && ServerUtils.serverData != null && ServerUtils.serverData!!.serverIP.contains("blocksmc.com")
+        get() = !mc.isSingleplayer && ServerUtils.serverData != null && ServerUtils.serverData!!.serverIP.contains("blocksmc")
     private val onMushMC: Boolean
         get() = !mc.isSingleplayer &&
                 (ServerUtils.serverData != null &&
-                        (ServerUtils.serverData!!.serverIP.contains("jogar.mush.com.br") ||
-                                ServerUtils.serverData!!.serverIP.contains("mush.com.br")))
+                        (ServerUtils.serverData!!.serverIP.contains("mush") ||
+                                ServerUtils.serverData!!.serverIP.contains("mush")))
     private val onHypixel: Boolean
-        get() = !mc.isSingleplayer && ServerUtils.serverData != null && ServerUtils.serverData!!.serverIP.contains("hypixel.net")
+        get() = !mc.isSingleplayer && ServerUtils.serverData != null && ServerUtils.serverData!!.serverIP.contains("hypixel")
     private val onGommeHD: Boolean
-        get() = !mc.isSingleplayer && ServerUtils.serverData != null && ServerUtils.serverData!!.serverIP.contains("GoomeHD.net")
+        get() = !mc.isSingleplayer && ServerUtils.serverData != null && ServerUtils.serverData!!.serverIP.contains("GoomeHD")
     private val onGamster: Boolean
-        get() = !mc.isSingleplayer && ServerUtils.serverData != null && ServerUtils.serverData!!.serverIP.contains("mc.gamster.org")
+        get() = !mc.isSingleplayer && ServerUtils.serverData != null && ServerUtils.serverData!!.serverIP.contains("gamster")
 
 
 
-    fun onInitialize() {
-        thread {
-            staffs.addAll(HttpUtils.get(bmcStaffList).toString().split(","))
-            mushmcstaffs.addAll(HttpUtils.get(mushStaffList).toString().split(","))
-            gamsterstaffs.addAll(HttpUtils.get(gamsterStaffList).toString().split(","))
-            hypixelstaffs.addAll(HttpUtils.get(hypixelStaffList).toString().split(","))
-            gommehdstaffs.addAll(HttpUtils.get(gommeHDStaffList).toString().split(","))
 
-            LOGGER.info("[Staff/main] $staffs")
-        }
-    }
+    override fun onEnable() {
+        staffs.addAll(HttpUtils.get(bmcStaffList).toString().split(","))
+        mushmcstaffs.addAll(HttpUtils.get(mushStaffList).toString().split(","))
+        gamsterstaffs.addAll(HttpUtils.get(gamsterStaffList).toString().split(","))
+        hypixelstaffs.addAll(HttpUtils.get(hypixelStaffList).toString().split(","))
+        gommehdstaffs.addAll(HttpUtils.get(gommeHDStaffList).toString().split(","))
 
-    fun onEnable() {
+        LOGGER.info("[Staff/main] $staffs")
         staffsInWorld.clear()
     }
 
@@ -87,9 +74,9 @@ class AntiStaff {
 
         val msg = if (leave.get()) ", leaving" else ""
         if (chat.get())
-            ClientUtils.displayChatMessage("[AntiStaff] Detected staff: $name$msg")
+            displayChatMessage("[AntiStaff] Detected staff: $name$msg")
         if (notify.get())
-            HUD.addNotification(Notification("Detected staff: $name$msg")
+            addNotification(Notification("Detected staff: $name$msg")
             )
         if (leave.get())
             mc.thePlayer.sendChatMessage("/leave")
@@ -217,4 +204,4 @@ class AntiStaff {
                 warn(it.name)
         }
     }
-}}
+}
