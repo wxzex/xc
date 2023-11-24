@@ -44,7 +44,7 @@ open class Module @JvmOverloads constructor(
 
     // Value that determines whether the module should depend on GameDetector
     private val onlyInGameValue = BoolValue("OnlyInGame", true, subjective = true) { GameDetector.state }
-    var autoDisables = mutableListOf<AutoDisable.DisableEvent>()
+    //var autoDisables = mutableListOf<AutoDisable.DisableEvent>()
 
     protected val TickScheduler = TickScheduler(this)
 
