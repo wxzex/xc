@@ -77,6 +77,8 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
     private val font by FontValue("Font", Fonts.font40)
     private val textShadow by BoolValue("ShadowText", true)
     private val upperCase by BoolValue("UpperCase", false)
+    private val lowerCase by BoolValue("UpperCase", false)
+
     private val space by FloatValue("Space", 0F, 0F..5F)
     private val textHeight by FloatValue("TextHeight", 11F, 1F..20F)
     private val textY by FloatValue("TextY", 1F, 0F..20F)
@@ -118,9 +120,12 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
             tags && !module.tag.isNullOrEmpty() -> module.getName() + tagPrefix + module.tag + tagSuffix
             else -> module.getName()
         }
+        return when {
+            upperCase -> displayString.uppercase()
+            lowerCase -> displayString.lowercase()
+            else -> displayString    }
+        }
 
-        return if (upperCase) displayString.uppercase() else displayString
-    }
 
     override fun drawElement(): Border? {
 

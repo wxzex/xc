@@ -32,6 +32,7 @@ object CommandManager {
         registerCommand(SayCommand())
         registerCommand(FriendCommand())
         registerCommand(AutoSettingsCommand())
+        registerCommand(AutoDisableCommand())
         registerCommand(LocalAutoSettingsCommand())
         registerCommand(ServerInfoCommand())
         registerCommand(ToggleCommand())

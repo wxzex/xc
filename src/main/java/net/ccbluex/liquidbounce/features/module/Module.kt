@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.features.module
 
 import net.ccbluex.liquidbounce.LiquidBounce.isStarting
 import net.ccbluex.liquidbounce.event.Listenable
+import net.ccbluex.liquidbounce.features.module.modules.misc.AutoDisable
 import net.ccbluex.liquidbounce.features.module.modules.misc.GameDetector
 import net.ccbluex.liquidbounce.file.FileManager.modulesConfig
 import net.ccbluex.liquidbounce.file.FileManager.saveConfig
@@ -38,10 +39,12 @@ open class Module @JvmOverloads constructor(
     val subjective: Boolean = category == ModuleCategory.RENDER,
     val gameDetecting: Boolean = canBeEnabled
 
+
 ) : MinecraftInstance(), Listenable {
 
     // Value that determines whether the module should depend on GameDetector
     private val onlyInGameValue = BoolValue("OnlyInGame", true, subjective = true) { GameDetector.state }
+    var autoDisables = mutableListOf<AutoDisable.DisableEvent>()
 
     protected val TickScheduler = TickScheduler(this)
 

@@ -56,6 +56,7 @@ object ModuleManager : Listenable {
             Aimbot,
             AirJump,
             AirLadder,
+            AutoDisable,
             Ambience,
             Animations,
             AntiAFK,
@@ -280,7 +281,7 @@ object ModuleManager : Listenable {
     /**
      * Get module by [moduleName]
      */
-    private fun getModule(moduleName: String?) = modules.find { it.name.equals(moduleName, ignoreCase = true) }
+    fun getModule(moduleName: String?) = modules.find { it.name.equals(moduleName, ignoreCase = true) }
 
     operator fun get(name: String) = getModule(name)
 
