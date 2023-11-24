@@ -97,7 +97,7 @@ object NameTags : Module("NameTags", ModuleCategory.RENDER) {
 
             val name = entity.displayName.unformattedText ?: continue
 
-            renderNameTag(entity, if (clearNames) ColorUtils.stripColor(name) else name)
+            (if (clearNames) ColorUtils.stripColor(name) else name)?.let { renderNameTag(entity, it) }
         }
 
         glPopMatrix()

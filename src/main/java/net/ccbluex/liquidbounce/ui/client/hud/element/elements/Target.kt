@@ -62,7 +62,7 @@ class Target : Element() {
             val targetHealth = getHealth(target, healthFromScoreboard, absorption)
 
             if (target != lastTarget || easingHealth < 0 || easingHealth > target.maxHealth ||
-                    abs(easingHealth - targetHealth) < 0.01
+                abs(easingHealth - targetHealth) < 0.01
             ) {
                 easingHealth = targetHealth
             }
@@ -89,7 +89,7 @@ class Target : Element() {
             // Heal animation
             if (easingHealth < targetHealth && HealAnimation)
                 drawRect((easingHealth / target.maxHealth).coerceAtMost(1f) * width, 34F,
-                        (targetHealth / target.maxHealth).coerceAtMost(1f) * width, 36F, Color(44, 201, 144).rgb)
+                    (targetHealth / target.maxHealth).coerceAtMost(1f) * width, 36F, Color(44, 201, 144).rgb)
 
             easingHealth += ((targetHealth - easingHealth) / 2f.pow(10f - fadeSpeed)) * deltaTime
 

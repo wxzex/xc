@@ -56,6 +56,8 @@ object Animations : Module("Animations", ModuleCategory.RENDER, gameDetecting = 
     val itemPosY by FloatValue("Y", 0f, -1f.. 1f)
     @JvmStatic
     val itemPosZ by FloatValue("Z", 0f, -1f.. 1f)
+    @JvmStatic
+    val itemScale by FloatValue("Item-Scale", 0.4f, 0f.. 4f)
     fun getAnimation() = animations.firstOrNull { it.name == animationMode }
 
 }

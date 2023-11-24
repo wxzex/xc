@@ -19,6 +19,8 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Side.Vertical
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.AnimationUtils
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.deltaTime
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowFontShader
@@ -36,14 +38,18 @@ import java.awt.Color
 class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                 side: Side = Side(Horizontal.RIGHT, Vertical.UP)) : Element(x, y, scale, side) {
 
-    private val textColorMode by ListValue("Text-Color", arrayOf("Custom", "Random", "Rainbow", "Mixer"), "Custom")
+    private val textColorMode by ListValue("Text-Color", arrayOf("Custom", "Random", "Rainbow", "Mixer", "Sky", "CRainbow", "LiquidSlowly"), "Custom")
     private val textRed by IntegerValue("Text-R", 0, 0..255) { textColorMode == "Custom" }
     private val textGreen by IntegerValue("Text-G", 111, 0..255) { textColorMode == "Custom" }
     private val textBlue by IntegerValue("Text-B", 255, 0..255) { textColorMode == "Custom" }
+    private val saturationValue by FloatValue("Saturation", 0.9F, 0F..1F)
+    private val brightnessValue by FloatValue("Brightness", 1F, 0F..1F)
+    private val cRainbowSecValue = IntegerValue("Seconds", 2, 1, 10)
+    private val distanceValue = IntegerValue("Line-Distance", 0, 0, 400)
     private val mixerSecValue by IntegerValue("Mixer-Seconds", 2, 1..10) { textColorMode == "Mixer" }
     private val mixerDistValue by IntegerValue("Mixer-Distance", 2, 0..10) { textColorMode == "Mixer" }
     private val rectMode by ListValue("Rect", arrayOf("None", "Left", "Right"), "None")
-    private val rectColorMode by ListValue("Rect-Color", arrayOf("Custom", "Random", "Rainbow", "Mixer"), "Rainbow") { rectMode != "None" }
+    private val rectColorMode by ListValue("Rect-Color", arrayOf("Custom", "Random", "Rainbow", "Mixer", "Sky", "CRainbow", "LiquidSlowly"), "Rainbow") { rectMode != "None" }
     private val isCustomRectSupported = { rectMode != "None" && rectColorMode == "Custom" }
     private val rectRed by IntegerValue("Rect-R", 255, 0..255, isSupported = isCustomRectSupported)
     private val rectGreen by IntegerValue("Rect-G", 255, 0..255, isSupported = isCustomRectSupported)
@@ -77,7 +83,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
     private val font by FontValue("Font", Fonts.font40)
     private val textShadow by BoolValue("ShadowText", true)
     private val upperCase by BoolValue("UpperCase", false)
-    private val lowerCase by BoolValue("UpperCase", false)
+    private val lowerCase by BoolValue("LowerCase", false)
 
     private val space by FloatValue("Space", 0F, 0F..5F)
     private val textHeight by FloatValue("TextHeight", 11F, 1F..20F)
@@ -190,6 +196,11 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                                 "Rainbow" -> 0
                                 "Random" -> moduleColor
                                 "Mixer" -> ColorMixer.getMixedColor(-index * mixerDistValue * 10, mixerSecValue).rgb
+                                "Sky" -> RenderUtils.SkyRainbow((index + 1) * distanceValue.get(), saturationValue, brightnessValue)
+                                "CRainbow" -> RenderUtils.getRainbowOpaque(cRainbowSecValue.get(), saturationValue, brightnessValue, (index + 1) * distanceValue.get())
+                                "LiquidSlowly" -> ColorUtils.LiquidSlowly(System.nanoTime(), (index + 1) * distanceValue.get(), saturationValue, brightnessValue).rgb
+                                "Fade" -> ColorUtils.fade(Color(textRed, textBlue, textGreen), (index + 1) * distanceValue.get(), 100).rgb
+
                                 else -> backgroundCustomColor
                             }
                         )
@@ -202,6 +213,11 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                                 "Rainbow" -> 0
                                 "Random" -> moduleColor
                                 "Mixer" -> ColorMixer.getMixedColor(-index * mixerDistValue * 10, mixerSecValue).rgb
+                                "Sky" -> RenderUtils.SkyRainbow((index + 1) * distanceValue.get(), saturationValue, brightnessValue)
+                                "CRainbow" -> RenderUtils.getRainbowOpaque(cRainbowSecValue.get(), saturationValue, brightnessValue, (index + 1) * distanceValue.get())
+                                "LiquidSlowly" -> ColorUtils.LiquidSlowly(System.nanoTime(), (index + 1) * distanceValue.get(), saturationValue, brightnessValue).rgb
+                                "Fade" -> ColorUtils.fade(Color(textRed, textBlue, textGreen), (index + 1) * distanceValue.get(), 100).rgb
+
                                 else -> textCustomColor
                             },
                             textShadow

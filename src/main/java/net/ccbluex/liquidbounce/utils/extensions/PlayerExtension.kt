@@ -69,7 +69,7 @@ fun Entity.isMob() =
 fun EntityPlayer.isClientFriend(): Boolean {
     val entityName = name ?: return false
 
-    return friendsConfig.isFriend(stripColor(entityName))
+    return stripColor(entityName)?.let { friendsConfig.isFriend(it) } ?: false
 }
 
 val Entity?.rotation

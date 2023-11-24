@@ -126,8 +126,10 @@ object AntiBot : Module("AntiBot", ModuleCategory.MISC) {
             for (networkPlayerInfo in mc.netHandler.playerInfoMap) {
                 val networkName = stripColor(networkPlayerInfo.getFullName())
 
-                if (if (equals) targetName == networkName else networkName in targetName)
-                    return false
+                if (targetName != null) {
+                    if (if (equals) targetName == networkName else networkName.toString() in targetName)
+                        return false
+                }
             }
 
             return true

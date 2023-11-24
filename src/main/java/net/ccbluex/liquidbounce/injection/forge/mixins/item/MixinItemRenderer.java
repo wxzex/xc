@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.item;
 
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.render.Animation;
 import net.ccbluex.liquidbounce.features.module.modules.render.Animations;
@@ -99,6 +100,7 @@ public abstract class MixinItemRenderer {
 
         //animations code
         GL11.glTranslated(Animations.getItemPosX(), Animations.getItemPosY(), Animations.getItemPosZ());
+        GlStateManager.scale(Animations.getItemScale(), Animations.getItemScale(), Animations.getItemScale());
         if (itemToRender != null) {
             boolean isAutoBlocking = itemToRender.getItem() instanceof ItemSword && KillAura.INSTANCE.getRenderBlocking();
 

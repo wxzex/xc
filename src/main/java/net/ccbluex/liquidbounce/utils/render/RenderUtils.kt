@@ -25,6 +25,7 @@ import java.awt.Color
 import kotlin.math.cos
 import kotlin.math.sin
 
+
 object RenderUtils : MinecraftInstance() {
     private val glCapMap = mutableMapOf<Int, Boolean>()
     private val DISPLAY_LISTS_2D = IntArray(4)
@@ -101,6 +102,43 @@ object RenderUtils : MinecraftInstance() {
         resetCaps()
     }
 
+
+    fun drawGradientSideways(left: Double, top: Double, right: Double, bottom: Double, col1: Int, col2: Int) {
+        val f = (col1 shr 24 and 0xFF) / 255.0f
+        val f2 = (col1 shr 16 and 0xFF) / 255.0f
+        val f3 = (col1 shr 8 and 0xFF) / 255.0f
+        val f4 = (col1 and 0xFF) / 255.0f
+        val f5 = (col2 shr 24 and 0xFF) / 255.0f
+        val f6 = (col2 shr 16 and 0xFF) / 255.0f
+        val f7 = (col2 shr 8 and 0xFF) / 255.0f
+        val f8 = (col2 and 0xFF) / 255.0f
+        glEnable(3042)
+        glDisable(3553)
+        glBlendFunc(770, 771)
+        glEnable(2848)
+        glShadeModel(7425)
+        glPushMatrix()
+        glBegin(7)
+        glColor4f(f2, f3, f4, f)
+        glVertex2d(left, top)
+        glVertex2d(left, bottom)
+        glColor4f(f6, f7, f8, f5)
+        glVertex2d(right, bottom)
+        glVertex2d(right, top)
+        glEnd()
+        glPopMatrix()
+        glEnable(3553)
+        glDisable(3042)
+        glDisable(2848)
+        glShadeModel(7424)
+    }
+
+    fun SkyRainbow(var2: Int, st: Float, bright: Float): Int {
+        var v1 = Math.ceil((System.currentTimeMillis() + (var2 * 109L)).toDouble()) / 5
+        return Color.getHSBColor(if ((360.0.also { v1 %= it } / 360.0).toFloat() < 0.5) -(v1 / 360.0).toFloat() else (v1 / 360.0).toFloat(),
+            st,
+            bright).rgb
+    }
     fun drawSelectionBoundingBox(boundingBox: AxisAlignedBB) {
         val tessellator = Tessellator.getInstance()
         val worldRenderer = tessellator.worldRenderer
@@ -674,4 +712,16 @@ object RenderUtils : MinecraftInstance() {
         worldRenderer.pos(x.toDouble(), y.toDouble(), 0.0).tex((u * f).toDouble(), (v * f1).toDouble()).endVertex()
         tessellator.draw()
     }
+
+    fun getRainbowOpaque(
+        seconds: Int,
+        saturation: Float,
+        brightness: Float,
+        index: Int
+    ): Int {
+        val hue =
+            (System.currentTimeMillis() + index) % (seconds * 1000) / (seconds * 1000).toFloat()
+        return Color.HSBtoRGB(hue, saturation, brightness)
+    }
+
 }

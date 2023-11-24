@@ -30,7 +30,7 @@ object MidClick : Module("MidClick", ModuleCategory.MISC, subjective = true, gam
             if (entity is EntityPlayer) {
                 val playerName = stripColor(entity.name)
 
-                if (!friendsConfig.isFriend(playerName)) {
+                if (!playerName?.let { friendsConfig.isFriend(it) }!!) {
                     friendsConfig.addFriend(playerName)
                     saveConfig(friendsConfig)
                     displayChatMessage("§a§l$playerName§c was added to your friends.")
