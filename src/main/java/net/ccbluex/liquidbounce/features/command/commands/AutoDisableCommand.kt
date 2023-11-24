@@ -1,10 +1,14 @@
 /*
- * LiquidBounce+ Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/WYSI-Foundation/LiquidBouncePlus/
- *
- * This code belongs to WYSI-Foundation. Please give credits when using this in your repository.
- */
+*
+* LiquidBounce+ Hacked Client
+* A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+* https://github.com/WYSI-Foundation/LiquidBouncePlus/
+*
+* This code belongs to WYSI-Foundation. Please give credits when using this in your repository.
+//
+
+/*
+
 package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.LiquidBounce
@@ -119,3 +123,4 @@ class AutoDisableCommand : Command("autodisable", "adisable") {
     }
 
 }
+*/

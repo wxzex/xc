@@ -56,7 +56,7 @@ object ModuleManager : Listenable {
             Aimbot,
             AirJump,
             AirLadder,
-            AutoDisable,
+            //AutoDisable,
             Ambience,
             Animations,
             AntiAFK,

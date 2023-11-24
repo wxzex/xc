@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 
-object HudDesigner : Module("HudDesigner", ModuleCategory.RENDER, gameDetecting = false) {
+object HudDesigner : Module("HudDesigner", ModuleCategory.RENDER, canBeEnabled = false) {
 
     private var gui: GuiHudDesigner? = null
     private fun getGUI(): GuiHudDesigner {
