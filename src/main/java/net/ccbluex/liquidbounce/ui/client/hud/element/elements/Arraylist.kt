@@ -43,6 +43,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
     private val textGreen by IntegerValue("Text-G", 111, 0..255) { textColorMode == "Custom" }
     private val textBlue by IntegerValue("Text-B", 255, 0..255) { textColorMode == "Custom" }
     private val saturationValue by FloatValue("Saturation", 0.9F, 0F..1F)
+    private val skydistanceValue = IntegerValue("Sky-Distance", 2, -4, 4)
     private val brightnessValue by FloatValue("Brightness", 1F, 0F..1F)
     private val cRainbowSecValue = IntegerValue("Seconds", 2, 1, 10)
     private val distanceValue = IntegerValue("Line-Distance", 0, 0, 400)
@@ -196,7 +197,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                                 "Rainbow" -> 0
                                 "Random" -> moduleColor
                                 "Mixer" -> ColorMixer.getMixedColor(-index * mixerDistValue * 10, mixerSecValue).rgb
-                                "Sky" -> RenderUtils.SkyRainbow((index + 1) * distanceValue.get(), saturationValue, brightnessValue)
+                                "Sky" -> RenderUtils.SkyRainbow((index + 1) * skydistanceValue.get() * 50, saturationValue, brightnessValue)
                                 "CRainbow" -> RenderUtils.getRainbowOpaque(cRainbowSecValue.get(), saturationValue, brightnessValue, (index + 1) * distanceValue.get())
                                 "LiquidSlowly" -> ColorUtils.LiquidSlowly(System.nanoTime(), (index + 1) * distanceValue.get(), saturationValue, brightnessValue).rgb
                                 "Fade" -> ColorUtils.fade(Color(textRed, textBlue, textGreen), (index + 1) * distanceValue.get(), 100).rgb
@@ -213,7 +214,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                                 "Rainbow" -> 0
                                 "Random" -> moduleColor
                                 "Mixer" -> ColorMixer.getMixedColor(-index * mixerDistValue * 10, mixerSecValue).rgb
-                                "Sky" -> RenderUtils.SkyRainbow((index + 1) * distanceValue.get(), saturationValue, brightnessValue)
+                                "Sky" -> RenderUtils.SkyRainbow((index + 1) * skydistanceValue.get(), saturationValue, brightnessValue)
                                 "CRainbow" -> RenderUtils.getRainbowOpaque(cRainbowSecValue.get(), saturationValue, brightnessValue, (index + 1) * distanceValue.get())
                                 "LiquidSlowly" -> ColorUtils.LiquidSlowly(System.nanoTime(), (index + 1) * distanceValue.get(), saturationValue, brightnessValue).rgb
                                 "Fade" -> ColorUtils.fade(Color(textRed, textBlue, textGreen), (index + 1) * distanceValue.get(), 100).rgb
