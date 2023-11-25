@@ -195,6 +195,7 @@ object ModuleManager : Listenable {
             TNTESP,
             Teams,
             Timer,
+            TimerRange,
             Tower,
             Tracers,
             Trigger,
