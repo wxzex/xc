@@ -42,13 +42,13 @@ object ModuleManager : Listenable {
 
         // Register modules which need to be instanced (Java classes)
         registerModules(
-            ColorMixer::class.java,
             Ignite::class.java,
             ItemTeleport::class.java,
             Phase::class.java,
             Teleport::class.java,
-            TeleportHit::class.java
-        )
+            TeleportHit::class.java,
+            ColorMixer::class.java,
+            )
 
         // Register modules which have already been instanced (Kotlin objects)
         registerModules(
