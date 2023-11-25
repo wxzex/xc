@@ -124,6 +124,7 @@ object ModuleManager : Listenable {
             GhostHand,
             GodMode,
             HUD,
+            Disabler,
             HighJump,
             HitBox,
             IceSpeed,
