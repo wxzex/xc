@@ -59,6 +59,7 @@ object ModuleManager : Listenable {
             //AutoDisable,
             Ambience,
             Animations,
+            AntiExploit,
             AntiAFK,
             AntiStaff,
             AntiBlind,
