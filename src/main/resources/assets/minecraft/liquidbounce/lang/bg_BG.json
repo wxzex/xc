@@ -194,7 +194,9 @@
         "module.kick.description": "Позволява ви да се кик-нете от сървър.",
         
         "module.ladderJump.description": "Прави ви по-бърз, когато докосвате стълба. (AAC)",
-
+        
+        "module.liquidChat.description": "Позволява ви да разговаряте с други потребители на Liquidbounce.",
+        
         "module.liquidWalk.description": "Позволява ви да ходите по вода.",
         
         "module.liquids.description": "Ви позволява да общувате с течности.",
@@ -306,6 +308,8 @@
         "module.teams.description": "Предотвратява Killaura да атакува съотборници от екипа.",
         
         "module.teleport.description": "Ви позволява да се телепортирате наоколо.",
+
+        "module.timerRange.description": "UNTRANSLATED: Allows you to manipulate the game speed in order to gain an advantage against your enemies.",
 
         "module.timer.description": "Променя скоростта на цялата игра.",
         

@@ -38,34 +38,34 @@ import java.awt.Color
 
 object Fly : Module("Fly", ModuleCategory.MOVEMENT, Keyboard.KEY_F) {
     private val flyModes = arrayOf(
-        Vanilla, SmoothVanilla,
+            Vanilla, SmoothVanilla,
 
-        // NCP
-        NCP, OldNCP,
+            // NCP
+            NCP, OldNCP,
 
-        // AAC
-        AAC1910, AAC305, AAC316, AAC3312, AAC3312Glide, AAC3313,
+            // AAC
+            AAC1910, AAC305, AAC316, AAC3312, AAC3312Glide, AAC3313,
 
-        // CubeCraft
-        CubeCraft,
+            // CubeCraft
+            CubeCraft,
 
-        // Hypixel
-        Hypixel, BoostHypixel, FreeHypixel,
+            // Hypixel
+            Hypixel, BoostHypixel, FreeHypixel,
 
-        // Rewinside
-        Rewinside, TeleportRewinside,
+            // Rewinside
+            Rewinside, TeleportRewinside,
 
-        // Other server specific flys
-        Mineplex, NeruxVace, Minesucht, Redesky,
+            // Other server specific flys
+            Mineplex, NeruxVace, Minesucht, Redesky,
 
-        // Spartan
-        Spartan, Spartan2, BugSpartan,
+            // Spartan
+            Spartan, Spartan2, BugSpartan,
 
-        // Other anti-cheats
-        MineSecure, HawkEye, HAC, WatchCat, Vulcan, VulcanOld,
+            // Other anti-cheats
+            MineSecure, HawkEye, HAC, WatchCat, Vulcan, VulcanOld,
 
-        // Other
-        Jetpack, KeepAlive, Collide, Jump, Flag
+            // Other
+            Jetpack, KeepAlive, Collide, Jump, Flag
     )
 
     private val modes = flyModes.map { it.modeName }.toTypedArray()
@@ -73,9 +73,9 @@ object Fly : Module("Fly", ModuleCategory.MOVEMENT, Keyboard.KEY_F) {
     val mode by ListValue("Mode", modes, "Vanilla")
 
     val vanillaSpeed by FloatValue("VanillaSpeed", 2f, 0f..10f, subjective = true)
-        { mode in arrayOf("Vanilla", "KeepAlive", "MineSecure", "BugSpartan") }
+    { mode in arrayOf("Vanilla", "KeepAlive", "MineSecure", "BugSpartan") }
     private val vanillaKickBypass by BoolValue("VanillaKickBypass", false, subjective = true)
-        { mode in arrayOf("Vanilla", "SmoothVanilla") }
+    { mode in arrayOf("Vanilla", "SmoothVanilla") }
     val ncpMotion by FloatValue("NCPMotion", 0f, 0f..1f) { mode == "NCP" }
 
     // AAC
@@ -87,9 +87,9 @@ object Fly : Module("Fly", ModuleCategory.MOVEMENT, Keyboard.KEY_F) {
     // Hypixel
     val hypixelBoost by BoolValue("Hypixel-Boost", true) { mode == "Hypixel" }
     val hypixelBoostDelay by IntegerValue("Hypixel-BoostDelay", 1200, 50..2000)
-        { mode == "Hypixel" && hypixelBoost }
+    { mode == "Hypixel" && hypixelBoost }
     val hypixelBoostTimer by FloatValue("Hypixel-BoostTimer", 1f, 0.1f..5f)
-        { mode == "Hypixel" && hypixelBoost }
+    { mode == "Hypixel" && hypixelBoost }
 
     // Other
     val mineplexSpeed by FloatValue("MineplexSpeed", 1f, 0.5f..10f) { mode == "Mineplex" }
@@ -98,6 +98,8 @@ object Fly : Module("Fly", ModuleCategory.MOVEMENT, Keyboard.KEY_F) {
 
     // Visuals
     private val mark by BoolValue("Mark", true, subjective = true)
+
+    var jumpY = 0.0
 
     var startY = 0.0
         private set
@@ -109,6 +111,7 @@ object Fly : Module("Fly", ModuleCategory.MOVEMENT, Keyboard.KEY_F) {
         val thePlayer = mc.thePlayer ?: return
 
         startY = thePlayer.posY
+        jumpY = thePlayer.posY
         wasFlying = mc.thePlayer.capabilities.isFlying
 
         modeModule.onEnable()
@@ -141,9 +144,9 @@ object Fly : Module("Fly", ModuleCategory.MOVEMENT, Keyboard.KEY_F) {
 
         val y = startY + 2.0 + (if (mode == "BoostHypixel") 0.42 else 0.0)
         drawPlatform(
-            y,
-            if (mc.thePlayer.entityBoundingBox.maxY < y) Color(0, 255, 0, 90) else Color(255, 0, 0, 90),
-            1.0
+                y,
+                if (mc.thePlayer.entityBoundingBox.maxY < y) Color(0, 255, 0, 90) else Color(255, 0, 0, 90),
+                1.0
         )
 
         modeModule.onRender3D(event)
@@ -212,12 +215,12 @@ object Fly : Module("Fly", ModuleCategory.MOVEMENT, Keyboard.KEY_F) {
         var ground = mc.thePlayer.posY
         while (ground > 0.0) {
             val customBox = AxisAlignedBB.fromBounds(
-                playerBoundingBox.maxX,
-                ground + blockHeight,
-                playerBoundingBox.maxZ,
-                playerBoundingBox.minX,
-                ground,
-                playerBoundingBox.minZ
+                    playerBoundingBox.maxX,
+                    ground + blockHeight,
+                    playerBoundingBox.maxZ,
+                    playerBoundingBox.minX,
+                    ground,
+                    playerBoundingBox.minZ
             )
             if (mc.theWorld.checkBlockCollision(customBox)) {
                 if (blockHeight <= 0.05) return ground + blockHeight

@@ -26,9 +26,9 @@ import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 object Criticals : Module("Criticals", ModuleCategory.COMBAT) {
 
     val mode by ListValue(
-        "Mode",
-        arrayOf("Packet", "NCPPacket", "VerusJump", "AACJump", "BlocksMC", "NoGround", "Hop", "TPHop", "Jump", "LowJump", "CustomMotion", "Visual"),
-        "Packet"
+            "Mode",
+            arrayOf("Packet", "NCPPacket", "VerusJump", "AACJump", "BlocksMC", "NoGround", "Hop", "TPHop", "Jump", "LowJump", "CustomMotion", "Visual"),
+            "Packet"
     )
 
     val delay by IntegerValue("Delay", 0, 0..500)
@@ -57,8 +57,8 @@ object Criticals : Module("Criticals", ModuleCategory.COMBAT) {
             val entity = event.targetEntity
 
             if (!thePlayer.onGround || thePlayer.isOnLadder || thePlayer.isInWeb || thePlayer.isInWater ||
-                thePlayer.isInLava || thePlayer.ridingEntity != null || entity.hurtTime > hurtTime ||
-                Fly.handleEvents() || !msTimer.hasTimePassed(delay)
+                    thePlayer.isInLava || thePlayer.ridingEntity != null || entity.hurtTime > hurtTime ||
+                    Fly.handleEvents() || !msTimer.hasTimePassed(delay)
             )
                 return
 
@@ -67,19 +67,17 @@ object Criticals : Module("Criticals", ModuleCategory.COMBAT) {
             when (mode.lowercase()) {
                 "packet" -> {
                     sendPackets(
-                        C04PacketPlayerPosition(x, y + 0.0625, z, true),
-                        C04PacketPlayerPosition(x, y, z, false),
-                        C04PacketPlayerPosition(x, y + 1.1E-5, z, false),
-                        C04PacketPlayerPosition(x, y, z, false)
+                            C04PacketPlayerPosition(x, y + 0.0625, z, true),
+                            C04PacketPlayerPosition(x, y, z, false)
                     )
                     thePlayer.onCriticalHit(entity)
                 }
 
                 "ncppacket" -> {
                     sendPackets(
-                        C04PacketPlayerPosition(x, y + 0.11, z, false),
-                        C04PacketPlayerPosition(x, y + 0.1100013579, z, false),
-                        C04PacketPlayerPosition(x, y + 0.0000013579, z, false)
+                            C04PacketPlayerPosition(x, y + 0.11, z, false),
+                            C04PacketPlayerPosition(x, y + 0.1100013579, z, false),
+                            C04PacketPlayerPosition(x, y + 0.0000013579, z, false)
                     )
                     mc.thePlayer.onCriticalHit(entity)
                 }
@@ -101,9 +99,8 @@ object Criticals : Module("Criticals", ModuleCategory.COMBAT) {
 
                 "blocksmc" -> {
                     sendPackets(
-                        C04PacketPlayerPosition(x, y + 0.001091981, z, true),
-                        C04PacketPlayerPosition(x, y + 0.000114514, z, false),
-                        C04PacketPlayerPosition(x, y, z, false)
+                            C04PacketPlayerPosition(x, y + 0.001091981, z, true),
+                            C04PacketPlayerPosition(x, y, z, false)
                     )
                 }
 
@@ -115,8 +112,8 @@ object Criticals : Module("Criticals", ModuleCategory.COMBAT) {
 
                 "tphop" -> {
                     sendPackets(
-                        C04PacketPlayerPosition(x, y + 0.02, z, false),
-                        C04PacketPlayerPosition(x, y + 0.01, z, false)
+                            C04PacketPlayerPosition(x, y + 0.02, z, false),
+                            C04PacketPlayerPosition(x, y + 0.01, z, false)
                     )
                     thePlayer.setPosition(x, y + 0.01, z)
                 }

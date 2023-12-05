@@ -196,7 +196,9 @@
         "module.kick.description": "Allows you to kick yourself from a server.",
         
         "module.ladderJump.description": "Boosts you up when touching a ladder. (AAC)",
-
+        
+        "module.liquidChat.description": "Allows you to chat with other LiquidBounce users.",
+        
         "module.liquidWalk.description": "Allows you to walk on water.",
         
         "module.liquids.description": "Allows you to interact with liquids.",
@@ -309,9 +311,9 @@
         
         "module.teleport.description": "Allows you to teleport around.",
 
-        "module.timer.description": "Changes the speed of the entire game.",
-
         "module.timerRange.description": "Allows you to manipulate the game speed in order to gain an advantage against your enemies.",
+
+        "module.timer.description": "Changes the speed of the entire game.",
         
         "module.tower.description": "Automatically builds a tower beneath you.",
         

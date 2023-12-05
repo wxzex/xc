@@ -194,7 +194,9 @@
         "module.kick.description": "Позволяет кикнуть самого себя с сервера.",
         
         "module.ladderJump.description": "Повышает скорость при касании лестницы. (AAC)",
-
+        
+        "module.liquidChat.description": "Чат для общения с другими пользователями LiquidBounce.",
+        
         "module.liquidWalk.description": "Позволяет ходить по воде.",
         
         "module.liquids.description": "Позволяет взаимодействовать с жидкостями (вода/лава...).",
@@ -306,6 +308,8 @@
         "module.teams.description": "Не даёт Killaura атаковать тиммейтов.",
         
         "module.teleport.description": "Позволяет недалеко телепортироваться.",
+
+        "module.timerRange.description": "UNTRANSLATED: Allows you to manipulate the game speed in order to gain an advantage against your enemies.",
 
         "module.timer.description": "Изменяет скорость всей игры.",
         

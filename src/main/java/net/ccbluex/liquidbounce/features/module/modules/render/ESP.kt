@@ -39,21 +39,21 @@ import kotlin.math.min
 object ESP : Module("ESP", ModuleCategory.RENDER) {
 
     val mode by ListValue("Mode",
-        arrayOf("Box", "OtherBox", "WireFrame", "2D", "Real2D", "Outline", "Glow"), "Box")
+            arrayOf("Box", "OtherBox", "WireFrame", "2D", "Real2D", "Outline", "Glow"), "Box")
 
-        val outlineWidth by FloatValue("Outline-Width", 3f, 0.5f..5f) { mode == "Outline" }
+    val outlineWidth by FloatValue("Outline-Width", 3f, 0.5f..5f) { mode == "Outline" }
 
-        val wireframeWidth by FloatValue("WireFrame-Width", 2f, 0.5f..5f) { mode == "WireFrame" }
+    val wireframeWidth by FloatValue("WireFrame-Width", 2f, 0.5f..5f) { mode == "WireFrame" }
 
-        private val glowRenderScale by FloatValue("Glow-Renderscale", 1f, 0.5f..2f) { mode == "Glow" }
-        private val glowRadius by IntegerValue("Glow-Radius", 4, 1..5) { mode == "Glow" }
-        private val glowFade by IntegerValue("Glow-Fade", 10, 0..30) { mode == "Glow" }
-        private val glowTargetAlpha by FloatValue("Glow-Target-Alpha", 0f, 0f..1f) { mode == "Glow" }
+    private val glowRenderScale by FloatValue("Glow-Renderscale", 1f, 0.5f..2f) { mode == "Glow" }
+    private val glowRadius by IntegerValue("Glow-Radius", 4, 1..5) { mode == "Glow" }
+    private val glowFade by IntegerValue("Glow-Fade", 10, 0..30) { mode == "Glow" }
+    private val glowTargetAlpha by FloatValue("Glow-Target-Alpha", 0f, 0f..1f) { mode == "Glow" }
 
     private val colorRainbow by BoolValue("Rainbow", false)
-        private val colorRed by IntegerValue("R", 255, 0..255) { !colorRainbow }
-        private val colorGreen by IntegerValue("G", 255, 0..255) { !colorRainbow }
-        private val colorBlue by IntegerValue("B", 255, 0..255) { !colorRainbow }
+    private val colorRed by IntegerValue("R", 255, 0..255) { !colorRainbow }
+    private val colorGreen by IntegerValue("G", 255, 0..255) { !colorRainbow }
+    private val colorBlue by IntegerValue("B", 255, 0..255) { !colorRainbow }
 
     private val colorTeam by BoolValue("Team", false)
     private val bot by BoolValue("Bots", true)
@@ -96,33 +96,33 @@ object ESP : Module("ESP", ModuleCategory.RENDER) {
                         val renderManager = mc.renderManager
                         val timer = mc.timer
                         val posX =
-                            entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * timer.renderPartialTicks - renderManager.renderPosX
+                                entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * timer.renderPartialTicks - renderManager.renderPosX
                         val posY =
-                            entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.renderPartialTicks - renderManager.renderPosY
+                                entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.renderPartialTicks - renderManager.renderPosY
                         val posZ =
-                            entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks - renderManager.renderPosZ
+                                entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks - renderManager.renderPosZ
                         draw2D(entity, posX, posY, posZ, color.rgb, Color.BLACK.rgb)
                     }
                     "Real2D" -> {
                         val renderManager = mc.renderManager
                         val timer = mc.timer
                         val bb = entity.hitBox
-                            .offset(-entity.posX, -entity.posY, -entity.posZ)
-                            .offset(
-                                entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * timer.renderPartialTicks,
-                                entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.renderPartialTicks,
-                                entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks
-                            )
-                            .offset(-renderManager.renderPosX, -renderManager.renderPosY, -renderManager.renderPosZ)
+                                .offset(-entity.posX, -entity.posY, -entity.posZ)
+                                .offset(
+                                        entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * timer.renderPartialTicks,
+                                        entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.renderPartialTicks,
+                                        entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks
+                                )
+                                .offset(-renderManager.renderPosX, -renderManager.renderPosY, -renderManager.renderPosZ)
                         val boxVertices = arrayOf(
-                            doubleArrayOf(bb.minX, bb.minY, bb.minZ),
-                            doubleArrayOf(bb.minX, bb.maxY, bb.minZ),
-                            doubleArrayOf(bb.maxX, bb.maxY, bb.minZ),
-                            doubleArrayOf(bb.maxX, bb.minY, bb.minZ),
-                            doubleArrayOf(bb.minX, bb.minY, bb.maxZ),
-                            doubleArrayOf(bb.minX, bb.maxY, bb.maxZ),
-                            doubleArrayOf(bb.maxX, bb.maxY, bb.maxZ),
-                            doubleArrayOf(bb.maxX, bb.minY, bb.maxZ)
+                                doubleArrayOf(bb.minX, bb.minY, bb.minZ),
+                                doubleArrayOf(bb.minX, bb.maxY, bb.minZ),
+                                doubleArrayOf(bb.maxX, bb.maxY, bb.minZ),
+                                doubleArrayOf(bb.maxX, bb.minY, bb.minZ),
+                                doubleArrayOf(bb.minX, bb.minY, bb.maxZ),
+                                doubleArrayOf(bb.minX, bb.maxY, bb.maxZ),
+                                doubleArrayOf(bb.maxX, bb.maxY, bb.maxZ),
+                                doubleArrayOf(bb.maxX, bb.minY, bb.maxZ)
                         )
                         var minX = Float.MAX_VALUE
                         var minY = Float.MAX_VALUE
@@ -130,13 +130,13 @@ object ESP : Module("ESP", ModuleCategory.RENDER) {
                         var maxY = -1f
                         for (boxVertex in boxVertices) {
                             val screenPos = WorldToScreen.worldToScreen(
-                                Vector3f(
-                                    boxVertex[0].toFloat(),
-                                    boxVertex[1].toFloat(),
-                                    boxVertex[2].toFloat()
-                                ), mvMatrix, projectionMatrix, mc.displayWidth, mc.displayHeight
+                                    Vector3f(
+                                            boxVertex[0].toFloat(),
+                                            boxVertex[1].toFloat(),
+                                            boxVertex[2].toFloat()
+                                    ), mvMatrix, projectionMatrix, mc.displayWidth, mc.displayHeight
                             )
-                                ?: continue
+                                    ?: continue
                             minX = min(screenPos.x, minX)
                             minY = min(screenPos.y, minY)
                             maxX = max(screenPos.x, maxX)
@@ -178,19 +178,19 @@ object ESP : Module("ESP", ModuleCategory.RENDER) {
 
         try {
             mc.theWorld.loadedEntityList
-                .filter { isSelected(it, false) }
-                .filterIsInstance<EntityLivingBase>()
-                .filterNot { isBot(it) && bot }
-                .groupBy { getColor(it) }
-                .forEach { (color, entities) ->
-                    GlowShader.startDraw(event.partialTicks, glowRenderScale)
+                    .filter { isSelected(it, false) }
+                    .filterIsInstance<EntityLivingBase>()
+                    .filterNot { isBot(it) && bot }
+                    .groupBy { getColor(it) }
+                    .forEach { (color, entities) ->
+                        GlowShader.startDraw(event.partialTicks, glowRenderScale)
 
-                    for (entity in entities) {
-                        mc.renderManager.renderEntitySimple(entity, event.partialTicks)
+                        for (entity in entities) {
+                            mc.renderManager.renderEntitySimple(entity, event.partialTicks)
+                        }
+
+                        GlowShader.stopDraw(color, glowRadius, glowFade, glowTargetAlpha)
                     }
-
-                    GlowShader.stopDraw(color, glowRadius, glowFade, glowTargetAlpha)
-                }
         } catch (ex: Exception) {
             LOGGER.error("An error occurred while rendering all entities for shader esp", ex)
         }
@@ -232,6 +232,9 @@ object ESP : Module("ESP", ModuleCategory.RENDER) {
         }
 
         return if (colorRainbow) rainbow() else Color(colorRed, colorGreen, colorBlue)
+    }
+    fun shouldRender(entity: EntityLivingBase): Boolean {
+        return (bot || !isBot(entity))
     }
 
 }

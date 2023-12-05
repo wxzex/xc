@@ -189,7 +189,9 @@
         "module.kick.description": "UNTRANSLATED: Allows you to kick yourself from a server.",
         
         "module.ladderJump.description": "UNTRANSLATED: Boosts you up when touching a ladder. (AAC)",
-
+        
+        "module.liquidChat.description": "Permite que tu fales com outros utilizadores do LiquidBounce.",
+        
         "module.liquidWalk.description": "Permite que tu andes em água.",
         
         "module.liquids.description": "Permite que tu interajas com líquidos.",
@@ -299,6 +301,8 @@
         "module.teams.description": "Evita o KillAura de atacar membros da equipa.",
         
         "module.teleport.description": "Permite que tu teleportes.",
+
+        "module.timerRange.description": "UNTRANSLATED: Allows you to manipulate the game speed in order to gain an advantage against your enemies.",
 
         "module.timer.description": "Muda a velocidade do jogo inteiro.",
         
