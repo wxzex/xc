@@ -8,9 +8,13 @@ package net.ccbluex.liquidbounce.features.module.modules.player
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.modules.combat.Backtrack
 import net.ccbluex.liquidbounce.features.module.modules.render.Breadcrumbs
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
+import net.ccbluex.liquidbounce.utils.PacketUtils.handlePackets
+import net.ccbluex.liquidbounce.utils.Rotation
+import net.ccbluex.liquidbounce.utils.RotationUtils.serverRotation
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
@@ -19,12 +23,14 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.network.Packet
-import net.minecraft.network.handshake.client.C00Handshake
-import net.minecraft.network.play.client.C03PacketPlayer
+import net.minecraft.network.play.client.*
+import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
+import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.network.play.server.S40PacketDisconnect
-import net.minecraft.network.status.client.C00PacketServerQuery
 import net.minecraft.network.status.client.C01PacketPing
+import net.minecraft.network.handshake.client.C00Handshake
+import net.minecraft.network.status.client.C00PacketServerQuery
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
@@ -124,6 +130,9 @@ object Blink : Module("Blink", ModuleCategory.PLAYER, gameDetecting = false) {
                         val packetPos = Vec3(packet.x, packet.y, packet.z)
                         synchronized(positions) {
                             positions += packetPos
+                        }
+                        if (packet.rotating) {
+                            serverRotation = Rotation(packet.yaw, packet.pitch)
                         }
                     }
                 }

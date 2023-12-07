@@ -114,7 +114,7 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
 
     // Modes
     private val priority by ListValue(
-        "Priority", arrayOf(
+            "Priority", arrayOf(
             "Health",
             "Distance",
             "Direction",
@@ -124,7 +124,7 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
             "HurtTime",
             "HealthAbsorption",
             "RegenAmplifier"
-        ), "Distance"
+    ), "Distance"
     )
     private val targetMode by ListValue("TargetMode", arrayOf("Single", "Switch", "Multi"), "Switch")
     private val limitedMultiTargets by IntegerValue("LimitedMultiTargets", 0, 0..50) { targetMode == "Multi" }
@@ -138,51 +138,51 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
 
     // AutoBlock
     private val autoBlock by ListValue("AutoBlock", arrayOf("Off", "Packet", "Fake"), "Packet")
-        private val releaseAutoBlock by BoolValue("ReleaseAutoBlock", true)
-                { autoBlock !in arrayOf("Off", "Fake") }
-            private val ignoreTickRule by BoolValue("IgnoreTickRule", false)
-                { autoBlock !in arrayOf("Off", "Fake") && releaseAutoBlock }
-            private val blockRate by IntegerValue("BlockRate", 100, 1..100)
-                { autoBlock !in arrayOf("Off", "Fake") && releaseAutoBlock }
+    private val releaseAutoBlock by BoolValue("ReleaseAutoBlock", true)
+    { autoBlock !in arrayOf("Off", "Fake") }
+    private val ignoreTickRule by BoolValue("IgnoreTickRule", false)
+    { autoBlock !in arrayOf("Off", "Fake") && releaseAutoBlock }
+    private val blockRate by IntegerValue("BlockRate", 100, 1..100)
+    { autoBlock !in arrayOf("Off", "Fake") && releaseAutoBlock }
 
-        private val uncpAutoBlock by BoolValue("UpdatedNCPAutoBlock", false)
-            { autoBlock !in arrayOf("Off", "Fake") && !releaseAutoBlock }
+    private val uncpAutoBlock by BoolValue("UpdatedNCPAutoBlock", false)
+    { autoBlock !in arrayOf("Off", "Fake") && !releaseAutoBlock }
 
-        private val switchStartBlock by BoolValue("SwitchStartBlock", false)
-            { autoBlock !in arrayOf("Off", "Fake") }
+    private val switchStartBlock by BoolValue("SwitchStartBlock", false)
+    { autoBlock !in arrayOf("Off", "Fake") }
 
-        private val interactAutoBlock by BoolValue("InteractAutoBlock", true)
-            { autoBlock !in arrayOf("Off", "Fake") }
+    private val interactAutoBlock by BoolValue("InteractAutoBlock", true)
+    { autoBlock !in arrayOf("Off", "Fake") }
 
-        // AutoBlock conditions
-        private val smartAutoBlock by BoolValue("SmartAutoBlock", false) { autoBlock != "Off" }
+    // AutoBlock conditions
+    private val smartAutoBlock by BoolValue("SmartAutoBlock", false) { autoBlock != "Off" }
 
-            // Ignore all blocking conditions, except for block rate, when standing still
-            private val forceBlock by BoolValue("ForceBlockWhenStill", true)
-                { autoBlock != "Off" && smartAutoBlock }
+    // Ignore all blocking conditions, except for block rate, when standing still
+    private val forceBlock by BoolValue("ForceBlockWhenStill", true)
+    { autoBlock != "Off" && smartAutoBlock }
 
-            // Don't block if target isn't holding a sword or an axe
-            private val checkWeapon by BoolValue("CheckEnemyWeapon", true)
-                { autoBlock != "Off" && smartAutoBlock }
+    // Don't block if target isn't holding a sword or an axe
+    private val checkWeapon by BoolValue("CheckEnemyWeapon", true)
+    { autoBlock != "Off" && smartAutoBlock }
 
-            // TODO: Make block range independent from attack range
-            private var blockRange by object : FloatValue("BlockRange", range, 1f..8f) {
-                override fun isSupported() = autoBlock != "Off" && smartAutoBlock
+    // TODO: Make block range independent from attack range
+    private var blockRange by object : FloatValue("BlockRange", range, 1f..8f) {
+        override fun isSupported() = autoBlock != "Off" && smartAutoBlock
 
-                override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtMost(this@KillAura.range)
-            }
+        override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtMost(this@KillAura.range)
+    }
 
-            // Don't block when you can't get damaged
-            private val maxOwnHurtTime by IntegerValue("MaxOwnHurtTime", 3, 0..10)
-                { autoBlock != "Off" && smartAutoBlock }
+    // Don't block when you can't get damaged
+    private val maxOwnHurtTime by IntegerValue("MaxOwnHurtTime", 3, 0..10)
+    { autoBlock != "Off" && smartAutoBlock }
 
-            // Don't block if target isn't looking at you
-            private val maxDirectionDiff by FloatValue("MaxOpponentDirectionDiff", 60f, 30f..180f)
-                { autoBlock != "Off" && smartAutoBlock }
+    // Don't block if target isn't looking at you
+    private val maxDirectionDiff by FloatValue("MaxOpponentDirectionDiff", 60f, 30f..180f)
+    { autoBlock != "Off" && smartAutoBlock }
 
-            // Don't block if target is swinging an item and therefore cannot attack
-            private val maxSwingProgress by IntegerValue("MaxOpponentSwingProgress", 1, 0..5)
-                { autoBlock != "Off" && smartAutoBlock }
+    // Don't block if target is swinging an item and therefore cannot attack
+    private val maxSwingProgress by IntegerValue("MaxOpponentSwingProgress", 1, 0..5)
+    { autoBlock != "Off" && smartAutoBlock }
 
 
     // Turn Speed
@@ -200,8 +200,8 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
     // Raycast
     private val raycastValue = BoolValue("RayCast", true) { !maxTurnSpeedValue.isMinimal() }
     private val raycast by raycastValue
-        private val raycastIgnored by BoolValue("RayCastIgnored", false) { raycastValue.isActive() }
-        private val livingRaycast by BoolValue("LivingRayCast", true) { raycastValue.isActive() }
+    private val raycastIgnored by BoolValue("RayCastIgnored", false) { raycastValue.isActive() }
+    private val livingRaycast by BoolValue("LivingRayCast", true) { raycastValue.isActive() }
 
     // Bypass
     // AAC value also modifies target selection a bit, not just rotations, but it is minor
@@ -218,14 +218,14 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
 
     private val micronizedValue = BoolValue("Micronized", true) { !maxTurnSpeedValue.isMinimal() }
     private val micronized by micronizedValue
-        private val micronizedStrength by FloatValue("MicronizedStrength", 0.8f, 0.2f..2f)
-            { micronizedValue.isActive() }
+    private val micronizedStrength by FloatValue("MicronizedStrength", 0.8f, 0.2f..2f)
+    { micronizedValue.isActive() }
 
     // Rotations
     private val silentRotationValue = BoolValue("SilentRotation", true) { !maxTurnSpeedValue.isMinimal() }
     private val silentRotation by silentRotationValue
-        private val rotationStrafe by ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Off")
-            { silentRotationValue.isActive() }
+    private val rotationStrafe by ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Off")
+    { silentRotationValue.isActive() }
 
     private val randomCenter by BoolValue("RandomCenter", true) { !maxTurnSpeedValue.isMinimal() }
     private val outborder by BoolValue("Outborder", false) { !maxTurnSpeedValue.isMinimal() }
@@ -234,25 +234,25 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
     // Predict
     private val predictValue = BoolValue("Predict", true) { !maxTurnSpeedValue.isMinimal() }
     private val predict by predictValue
-        private val maxPredictSizeValue = object : FloatValue("MaxPredictSize", 1f, 0.1f..5f) {
-            override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtLeast(minPredictSize)
+    private val maxPredictSizeValue = object : FloatValue("MaxPredictSize", 1f, 0.1f..5f) {
+        override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtLeast(minPredictSize)
 
-            override fun isSupported() = predictValue.isActive()
-        }
+        override fun isSupported() = predictValue.isActive()
+    }
 
-        private val maxPredictSize by maxPredictSizeValue
-        private val minPredictSize: Float by object : FloatValue("MinPredictSize", 1f, 0.1f..5f) {
-            override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtMost(maxPredictSize)
+    private val maxPredictSize by maxPredictSizeValue
+    private val minPredictSize: Float by object : FloatValue("MinPredictSize", 1f, 0.1f..5f) {
+        override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtMost(maxPredictSize)
 
-            override fun isSupported() = predictValue.isActive() && !maxPredictSizeValue.isMinimal()
-        }
+        override fun isSupported() = predictValue.isActive() && !maxPredictSizeValue.isMinimal()
+    }
 
     // Bypass
     private val failRate by IntegerValue("FailRate", 0, 0..99)
     private val fakeSwing by BoolValue("FakeSwing", true) { swing }
     private val noInventoryAttack by BoolValue("NoInvAttack", false, subjective = true)
-        private val noInventoryDelay by IntegerValue("NoInvDelay", 200, 0..500, subjective = true)
-            { noInventoryAttack }
+    private val noInventoryDelay by IntegerValue("NoInvDelay", 200, 0..500, subjective = true)
+    { noInventoryAttack }
     private val noConsumeAttack by ListValue("NoConsumeAttack", arrayOf("Off", "NoHits", "NoRotation"), "Off", subjective = true)
 
     // Visuals
@@ -291,7 +291,7 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
 
         if (!handleEvents())
             return
-        
+
         updateTarget()
     }
 
@@ -319,6 +319,9 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
 
             target ?: return
             currentTarget ?: return
+
+            // Update hitable
+            updateHitable()
             return
         }
     }
@@ -421,7 +424,7 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
         target ?: return
 
         if (mark && targetMode != "Multi") drawPlatform(
-            target!!, if (hitable) Color(37, 126, 255, 70) else Color(255, 0, 0, 70)
+                target!!, if (hitable) Color(37, 126, 255, 70) else Color(255, 0, 0, 70)
         )
 
         if (currentTarget != null && attackTimer.hasTimePassed(attackDelay)) {
@@ -555,7 +558,7 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
             "healthabsorption" -> targets.sortBy { it.health + it.absorptionAmount } // Sort by full health with absorption effect
             "regenamplifier" -> targets.sortBy {
                 if (it.isPotionActive(Potion.regeneration)) it.getActivePotionEffect(
-                    Potion.regeneration
+                        Potion.regeneration
                 ).amplifier else -1
             }
 
@@ -640,18 +643,18 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
         if (keepSprint) {
             // Critical Effect
             if (thePlayer.fallDistance > 0F && !thePlayer.onGround && !thePlayer.isOnLadder && !thePlayer.isInWater && !thePlayer.isPotionActive(
-                    Potion.blindness
-                ) && !thePlayer.isRiding
+                            Potion.blindness
+                    ) && !thePlayer.isRiding
             ) thePlayer.onCriticalHit(entity)
 
             // Enchant Effect
             if (EnchantmentHelper.getModifierForCreature(
-                    thePlayer.heldItem, entity.creatureAttribute
-                ) > 0F
+                            thePlayer.heldItem, entity.creatureAttribute
+                    ) > 0F
             ) thePlayer.onEnchantmentCritical(entity)
         } else {
             if (mc.playerController.currentGameType != WorldSettings.GameType.SPECTATOR) thePlayer.attackTargetEntityWithCurrentItem(
-                entity
+                    entity
             )
         }
 
@@ -659,14 +662,14 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
         repeat(3) {
             // Critical Effect
             if (thePlayer.fallDistance > 0F && !thePlayer.onGround && !thePlayer.isOnLadder && !thePlayer.isInWater && !thePlayer.isPotionActive(
-                    Potion.blindness
-                ) && thePlayer.ridingEntity == null || Criticals.handleEvents() && Criticals.msTimer.hasTimePassed(Criticals.delay) && !thePlayer.isInWater && !thePlayer.isInLava && !thePlayer.isInWeb
+                            Potion.blindness
+                    ) && thePlayer.ridingEntity == null || Criticals.handleEvents() && Criticals.msTimer.hasTimePassed(Criticals.delay) && !thePlayer.isInWater && !thePlayer.isInLava && !thePlayer.isInWeb
             ) thePlayer.onCriticalHit(target)
 
             // Enchant Effect
             if (EnchantmentHelper.getModifierForCreature(
-                    thePlayer.heldItem, target!!.creatureAttribute
-                ) > 0f || fakeSharp
+                            thePlayer.heldItem, target!!.creatureAttribute
+                    ) > 0f || fakeSharp
             ) thePlayer.onEnchantmentCritical(target)
         }
 
@@ -688,30 +691,30 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
 
         if (predict) {
             boundingBox = boundingBox.offset(
-                (entity.posX - entity.prevPosX - (mc.thePlayer.posX - mc.thePlayer.prevPosX))
-                    * nextFloat(minPredictSize, maxPredictSize),
-                (entity.posY - entity.prevPosY - (mc.thePlayer.posY - mc.thePlayer.prevPosY))
-                    * nextFloat(minPredictSize, maxPredictSize),
-                (entity.posZ - entity.prevPosZ - (mc.thePlayer.posZ - mc.thePlayer.prevPosZ))
-                    * nextFloat(minPredictSize, maxPredictSize)
+                    (entity.posX - entity.prevPosX - (mc.thePlayer.posX - mc.thePlayer.prevPosX))
+                            * nextFloat(minPredictSize, maxPredictSize),
+                    (entity.posY - entity.prevPosY - (mc.thePlayer.posY - mc.thePlayer.prevPosY))
+                            * nextFloat(minPredictSize, maxPredictSize),
+                    (entity.posZ - entity.prevPosZ - (mc.thePlayer.posZ - mc.thePlayer.prevPosZ))
+                            * nextFloat(minPredictSize, maxPredictSize)
             )
         }
 
         val rotation = searchCenter(
-            boundingBox,
-            outborder && !attackTimer.hasTimePassed(attackDelay / 2),
-            randomCenter,
-            predict,
-            lookRange = range + scanRange,
-            attackRange = range,
-            throughWallsRange = throughWallsRange
+                boundingBox,
+                outborder && !attackTimer.hasTimePassed(attackDelay / 2),
+                randomCenter,
+                predict,
+                lookRange = range + scanRange,
+                attackRange = range,
+                throughWallsRange = throughWallsRange
         ) ?: return false
 
         // Get our current rotation. Otherwise, player rotation.
         val currentRotation = currentRotation ?: mc.thePlayer.rotation
 
         var limitedRotation = limitAngleChange(
-            currentRotation, rotation, nextFloat(minTurnSpeed, maxTurnSpeed)
+                currentRotation, rotation, nextFloat(minTurnSpeed, maxTurnSpeed)
         )
 
         if (micronized) {
@@ -719,18 +722,18 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
             if (isRotationFaced(entity, maxRange.toDouble(), currentRotation)) {
                 // Limit angle change but this time modify the turn speed.
                 limitedRotation =
-                    limitAngleChange(currentRotation, rotation, nextFloat(endInclusive = micronizedStrength))
+                        limitAngleChange(currentRotation, rotation, nextFloat(endInclusive = micronizedStrength))
             }
         }
 
         if (silentRotation) {
             setTargetRotation(
-                limitedRotation,
-                if (aac) 10 else keepRotationTicks,
-                !(!silentRotation || rotationStrafe == "Off"),
-                rotationStrafe == "Strict",
-                minTurnSpeed to maxTurnSpeed,
-                angleThresholdUntilReset
+                    limitedRotation,
+                    if (aac) 10 else keepRotationTicks,
+                    !(!silentRotation || rotationStrafe == "Off"),
+                    rotationStrafe == "Strict",
+                    minTurnSpeed to maxTurnSpeed,
+                    angleThresholdUntilReset
             )
         } else {
             limitedRotation.toPlayer(mc.thePlayer)
@@ -753,11 +756,11 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
 
         if (raycast) {
             val raycastedEntity =
-                raycastEntity(range.toDouble(), currentRotation.yaw, currentRotation.pitch) { entity ->
-                    (!livingRaycast || (entity is EntityLivingBase && entity !is EntityArmorStand)) && (isEnemy(entity) || raycastIgnored || aac && mc.theWorld.getEntitiesWithinAABBExcludingEntity(
-                        entity, entity.entityBoundingBox
-                    ).isNotEmpty())
-                }
+                    raycastEntity(range.toDouble(), currentRotation.yaw, currentRotation.pitch) { entity ->
+                        (!livingRaycast || (entity is EntityLivingBase && entity !is EntityArmorStand)) && (isEnemy(entity) || raycastIgnored || aac && mc.theWorld.getEntitiesWithinAABBExcludingEntity(
+                                entity, entity.entityBoundingBox
+                        ).isNotEmpty())
+                    }
 
             if (raycast && raycastedEntity != null && raycastedEntity is EntityLivingBase && (NoFriends.handleEvents() || !(raycastedEntity is EntityPlayer && raycastedEntity.isClientFriend()))) {
                 val prevHurtTime = currentTarget!!.hurtTime
@@ -801,8 +804,8 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
                 val hitVec = movingObject.hitVec
 
                 sendPackets(
-                    C02PacketUseEntity(interactEntity, hitVec - interactEntity.positionVector),
-                    C02PacketUseEntity(interactEntity, INTERACT)
+                        C02PacketUseEntity(interactEntity, hitVec - interactEntity.positionVector),
+                        C02PacketUseEntity(interactEntity, INTERACT)
                 )
 
             }
@@ -843,7 +846,7 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
      * Check if [entity] is alive
      */
     private fun isAlive(entity: EntityLivingBase) =
-        entity.isEntityAlive && entity.health > 0 || aac && entity.hurtTime > 5
+            entity.isEntityAlive && entity.health > 0 || aac && entity.hurtTime > 5
 
     /**
      * Check if player is able to block
@@ -883,7 +886,7 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
         get() = max(range + scanRange, throughWallsRange)
 
     private fun getRange(entity: Entity) =
-        (if (mc.thePlayer.getDistanceToEntityBox(entity) >= throughWallsRange) range + scanRange else throughWallsRange) - if (mc.thePlayer.isSprinting) rangeSprintReduction else 0F
+            (if (mc.thePlayer.getDistanceToEntityBox(entity) >= throughWallsRange) range + scanRange else throughWallsRange) - if (mc.thePlayer.isSprinting) rangeSprintReduction else 0F
 
     /**
      * HUD Tag

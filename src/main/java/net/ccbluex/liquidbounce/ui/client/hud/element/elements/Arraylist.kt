@@ -58,10 +58,10 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
     private val rectAlpha by IntegerValue("Rect-Alpha", 255, 0..255, isSupported = isCustomRectSupported)
 
     private val backgroundMode by ListValue("Background-Color", arrayOf("Custom", "Random", "Rainbow", "Mixer"), "Custom")
-        private val backgroundRed by IntegerValue("Background-R", 0, 0..255) { backgroundMode == "Custom" }
-        private val backgroundGreen by IntegerValue("Background-G", 0, 0..255) { backgroundMode == "Custom" }
-        private val backgroundBlue by IntegerValue("Background-B", 0, 0..255) { backgroundMode == "Custom" }
-        private val backgroundAlpha by IntegerValue("Background-Alpha", 0, 0..255) { backgroundMode == "Custom" }
+    private val backgroundRed by IntegerValue("Background-R", 0, 0..255) { backgroundMode == "Custom" }
+    private val backgroundGreen by IntegerValue("Background-G", 0, 0..255) { backgroundMode == "Custom" }
+    private val backgroundBlue by IntegerValue("Background-B", 0, 0..255) { backgroundMode == "Custom" }
+    private val backgroundAlpha by IntegerValue("Background-Alpha", 0, 0..255) { backgroundMode == "Custom" }
 
     private fun isColorModeUsed(value: String) = textColorMode == value || rectMode == value || backgroundMode == value
     private val saturation by FloatValue("Random-Saturation", 0.9f, 0f..1f) { isColorModeUsed("Random") }
@@ -70,21 +70,21 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
     private val rainbowY by FloatValue("Rainbow-Y", -1000F, -2000F..2000F) { isColorModeUsed("Rainbow") }
 
     private val tags by BoolValue("Tags", true)
-        private val tagsStyle by object : ListValue("TagsStyle", arrayOf("[]", "()", "<>", "-", "|", "Space"), "Space") {
-            override fun isSupported() = tags
 
-            // onUpdate - updates tag onInit and onChanged
-            override fun onUpdate(value: String) = updateTagDetails()
-        }
-        private val tagsArrayColor by object : BoolValue("TagsArrayColor", false) {
-            override fun isSupported() = tags
-            override fun onUpdate(value: Boolean) = updateTagDetails()
-        }
+    private val tagsStyle by object : ListValue("TagsStyle", arrayOf("[]", "()", "<>", "-", "|", "Space"), "Space") {
+        override fun isSupported() = tags
+        // onUpdate - updates tag onInit and onChanged
+        override fun onUpdate(value: String) = updateTagDetails()
+    }
+    private val tagsCase by ListValue("TagsCase", arrayOf("Normal", "Uppercase", "Lowercase"), "Normal") { tags }
+    private val tagsArrayColor by object : BoolValue("TagsArrayColor", false) {
+        override fun isSupported() = tags
+        override fun onUpdate(value: Boolean) = updateTagDetails()
+    }
 
     private val font by FontValue("Font", Fonts.font40)
     private val textShadow by BoolValue("ShadowText", true)
-    private val upperCase by BoolValue("UpperCase", false)
-    private val lowerCase by BoolValue("LowerCase", false)
+    private val moduleCase by ListValue("ModuleCase", arrayOf("Normal", "Uppercase", "Lowercase"), "Normal")
 
     private val space by FloatValue("Space", 0F, 0F..5F)
     private val textHeight by FloatValue("TextHeight", 11F, 1F..20F)
@@ -93,8 +93,9 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
     companion object {
         val spacedModules by BoolValue("SpacedModules", false)
         val inactiveStyle by ListValue("InactiveModulesStyle", arrayOf("Normal", "Color", "Hide"), "Color")
-            { GameDetector.state }
+        { GameDetector.state }
     }
+
 
     private var x2 = 0
     private var y2 = 0F
@@ -111,8 +112,9 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
         updateTagDetails()
     }
 
+
     fun updateTagDetails() {
-        val pair : Pair<String, String> = when (tagsStyle) {
+        val pair: Pair<String, String> = when (tagsStyle) {
             "[]", "()", "<>" -> tagsStyle[0].toString() to tagsStyle[1].toString()
             "-", "|" -> tagsStyle[0] + " " to ""
             else -> "" to ""
@@ -122,16 +124,25 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
         tagSuffix = pair.second
     }
 
-    private fun getDisplayString(module: Module): String {
-        val displayString = when {
-            tags && !module.tag.isNullOrEmpty() -> module.getName() + tagPrefix + module.tag + tagSuffix
+        private fun getDisplayString(module: Module): String {
+        val moduleName = when (moduleCase) {
+            "Uppercase" -> module.getName().uppercase()
+            "Lowercase" -> module.getName().lowercase()
             else -> module.getName()
         }
-        return when {
-            upperCase -> displayString.uppercase()
-            lowerCase -> displayString.lowercase()
-            else -> displayString    }
+
+        var tag = module.tag ?: ""
+
+        tag = when (tagsCase) {
+            "Uppercase" -> tag.uppercase()
+            "Lowercase" -> tag.lowercase()
+            else -> tag
         }
+
+        val moduleTag = if (tags && !module.tag.isNullOrEmpty()) tagPrefix + tag + tagSuffix else ""
+
+        return moduleName + moduleTag
+    }
 
 
     override fun drawElement(): Border? {
@@ -178,8 +189,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
 
 
         modules.forEachIndexed { index, module ->
-            val yPos = (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) *
-                    if (side.vertical == Vertical.DOWN) index + 1 else index
+            val yPos = (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) * if (side.vertical == Vertical.DOWN) index + 1 else index
 
             val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
 
@@ -233,6 +243,10 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                                     "Rainbow" -> 0
                                     "Random" -> moduleColor
                                     "Mixer" -> ColorMixer.getMixedColor(-index * mixerDistValue * 10, mixerSecValue).rgb
+                                    "Sky" -> RenderUtils.SkyRainbow((index + 1) * skydistanceValue.get(), saturationValue, brightnessValue)
+                                    "CRainbow" -> RenderUtils.getRainbowOpaque(cRainbowSecValue.get(), saturationValue, brightnessValue, (index + 1) * distanceValue.get())
+                                    "LiquidSlowly" -> ColorUtils.LiquidSlowly(System.nanoTime(), (index + 1) * distanceValue.get(), saturationValue, brightnessValue).rgb
+                                    "Fade" -> ColorUtils.fade(Color(textRed, textBlue, textGreen), (index + 1) * distanceValue.get(), 100).rgb
 
                                     else -> rectCustomColor
                                 }
@@ -255,6 +269,10 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                                 "Rainbow" -> 0
                                 "Random" -> moduleColor
                                 "Mixer" -> ColorMixer.getMixedColor(-index * mixerDistValue * 10, mixerSecValue).rgb
+                                "Sky" -> RenderUtils.SkyRainbow((index + 1) * skydistanceValue.get(), saturationValue, brightnessValue)
+                                "CRainbow" -> RenderUtils.getRainbowOpaque(cRainbowSecValue.get(), saturationValue, brightnessValue, (index + 1) * distanceValue.get())
+                                "LiquidSlowly" -> ColorUtils.LiquidSlowly(System.nanoTime(), (index + 1) * distanceValue.get(), saturationValue, brightnessValue).rgb
+                                "Fade" -> ColorUtils.fade(Color(textRed, textBlue, textGreen), (index + 1) * distanceValue.get(), 100).rgb
 
                                 else -> backgroundCustomColor
                             }
@@ -268,6 +286,10 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                                 "Rainbow" -> 0
                                 "Random" -> moduleColor
                                 "Mixer" -> ColorMixer.getMixedColor(-index * mixerDistValue * 10, mixerSecValue).rgb
+                                "Sky" -> RenderUtils.SkyRainbow((index + 1) * skydistanceValue.get(), saturationValue, brightnessValue)
+                                "CRainbow" -> RenderUtils.getRainbowOpaque(cRainbowSecValue.get(), saturationValue, brightnessValue, (index + 1) * distanceValue.get())
+                                "LiquidSlowly" -> ColorUtils.LiquidSlowly(System.nanoTime(), (index + 1) * distanceValue.get(), saturationValue, brightnessValue).rgb
+                                "Fade" -> ColorUtils.fade(Color(textRed, textBlue, textGreen), (index + 1) * distanceValue.get(), 100).rgb
 
                                 else -> textCustomColor
                             },
@@ -283,6 +305,10 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                                     "Rainbow" -> 0
                                     "Random" -> moduleColor
                                     "Mixer" -> ColorMixer.getMixedColor(-index * mixerDistValue * 10, mixerSecValue).rgb
+                                    "Sky" -> RenderUtils.SkyRainbow((index + 1) * skydistanceValue.get(), saturationValue, brightnessValue)
+                                    "CRainbow" -> RenderUtils.getRainbowOpaque(cRainbowSecValue.get(), saturationValue, brightnessValue, (index + 1) * distanceValue.get())
+                                    "LiquidSlowly" -> ColorUtils.LiquidSlowly(System.nanoTime(), (index + 1) * distanceValue.get(), saturationValue, brightnessValue).rgb
+                                    "Fade" -> ColorUtils.fade(Color(textRed, textBlue, textGreen), (index + 1) * distanceValue.get(), 100).rgb
 
                                     else -> rectCustomColor
                                 }
