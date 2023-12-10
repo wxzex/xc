@@ -735,8 +735,8 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
                     width / 2 + Fonts.font40.getStringWidth(info) + 2,
                     height / 2 + 16,
                     3,
-                    Color.BLACK.rgb,
-                    Color.BLACK.rgb
+                    Color.TRANSLUCENT,
+                    Color.TRANSLUCENT,
             )
 
             resetColor()

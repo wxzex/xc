@@ -24,6 +24,9 @@ object RotationUtils : MinecraftInstance(), Listenable {
      *
      * @param event Update event
      */
+
+    var targetRotation: Rotation? = null
+
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         currentRotation?.let { rotation ->

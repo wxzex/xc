@@ -64,10 +64,10 @@ object Backtrack : Module("Backtrack", ModuleCategory.COMBAT) {
 
     // ESP
     private val esp by BoolValue("ESP", true, subjective = true) { mode == "Modern" }
-        private val rainbow by BoolValue("Rainbow", true, subjective = true) { mode == "Modern" && esp }
-        private val red by IntegerValue("R", 0, 0..255, subjective = true) { !rainbow && mode == "Modern" && esp }
-        private val green by IntegerValue("G", 255, 0..255, subjective = true) { !rainbow && mode == "Modern" && esp }
-        private val blue by IntegerValue("B", 0, 0..255, subjective = true) { !rainbow && mode == "Modern" && esp }
+    private val rainbow by BoolValue("Rainbow", true, subjective = true) { mode == "Modern" && esp }
+    private val red by IntegerValue("R", 0, 0..255, subjective = true) { !rainbow && mode == "Modern" && esp }
+    private val green by IntegerValue("G", 255, 0..255, subjective = true) { !rainbow && mode == "Modern" && esp }
+    private val blue by IntegerValue("B", 0, 0..255, subjective = true) { !rainbow && mode == "Modern" && esp }
 
     private val packetQueue = LinkedHashMap<Packet<*>, Long>()
     private val positions = mutableListOf<Pair<Vec3, Long>>()
@@ -102,11 +102,11 @@ object Backtrack : Module("Backtrack", ModuleCategory.COMBAT) {
                     is S0CPacketSpawnPlayer -> {
                         // Insert first backtrack data
                         addBacktrackData(
-                            packet.player,
-                            packet.realX,
-                            packet.realY,
-                            packet.realZ,
-                            System.currentTimeMillis()
+                                packet.player,
+                                packet.realX,
+                                packet.realY,
+                                packet.realZ,
+                                System.currentTimeMillis()
                         )
                     }
                 }
@@ -211,22 +211,21 @@ object Backtrack : Module("Backtrack", ModuleCategory.COMBAT) {
         val target = target as? EntityLivingBase
         val targetMixin = target as? IMixinEntity
 
-        if (targetMixin != null && !Blink.blinkingReceive() && shouldBacktrack()
-            && targetMixin.truePos && (style == "Smooth" || !globalTimer.hasTimePassed(delay))
-        ) {
-            val trueDistSq = targetMixin.run { mc.thePlayer.getDistanceSq(trueX, trueY, trueZ) }
-            val distSq = target.run { mc.thePlayer.getDistanceSq(posX, posY, posZ) }
+        if (targetMixin != null && !Blink.blinkingReceive() && shouldBacktrack() && targetMixin.truePos) {
+            val trueDist = mc.thePlayer.getDistance(targetMixin.trueX, targetMixin.trueY, targetMixin.trueZ)
+            val dist = mc.thePlayer.getDistance(target.posX, target.posY, target.posZ)
 
-            if (trueDistSq <= 36f && (!smart || trueDistSq >= distSq)) {
+            if (trueDist <= 6f && (!smart || trueDist >= dist) && (style == "Smooth" || !globalTimer.hasTimePassed(delay))) {
                 shouldDraw = true
+
                 if (mc.thePlayer.getDistanceToEntityBox(target) in minDistance..maxDistance)
                     handlePackets()
                 else
                     handlePacketsRange()
+            } else {
+                clearPackets()
+                globalTimer.reset()
             }
-        } else {
-            clearPackets()
-            globalTimer.reset()
         }
     }
 
@@ -295,23 +294,23 @@ object Backtrack : Module("Backtrack", ModuleCategory.COMBAT) {
                     if (targetEntity.truePos) {
 
                         val x =
-                            targetEntity.trueX - renderManager.renderPosX
+                                targetEntity.trueX - renderManager.renderPosX
                         val y =
-                            targetEntity.trueY - renderManager.renderPosY
+                                targetEntity.trueY - renderManager.renderPosY
                         val z =
-                            targetEntity.trueZ - renderManager.renderPosZ
+                                targetEntity.trueZ - renderManager.renderPosZ
 
                         val axisAlignedBB = entityBoundingBox.offset(-posX, -posY, -posZ).offset(x, y, z)
 
                         drawBacktrackBox(
-                            AxisAlignedBB.fromBounds(
-                                axisAlignedBB.minX,
-                                axisAlignedBB.minY,
-                                axisAlignedBB.minZ,
-                                axisAlignedBB.maxX,
-                                axisAlignedBB.maxY,
-                                axisAlignedBB.maxZ
-                            ), color
+                                AxisAlignedBB.fromBounds(
+                                        axisAlignedBB.minX,
+                                        axisAlignedBB.minY,
+                                        axisAlignedBB.minZ,
+                                        axisAlignedBB.maxX,
+                                        axisAlignedBB.maxY,
+                                        axisAlignedBB.maxZ
+                                ), color
                         )
                     }
                 }
@@ -504,9 +503,9 @@ object Backtrack : Module("Backtrack", ModuleCategory.COMBAT) {
         get() = if (rainbow) rainbow() else Color(red, green, blue)
 
     private fun shouldBacktrack() =
-        target?.let {
-            !it.isDead && isEnemy(it) && (mc.thePlayer?.ticksExisted ?: 0) > 20
-        } ?: false
+            target?.let {
+                !it.isDead && isEnemy(it) && (mc.thePlayer?.ticksExisted ?: 0) > 20
+            } ?: false
 
     private fun reset() {
         target = null

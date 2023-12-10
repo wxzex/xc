@@ -24,9 +24,12 @@ object MovementUtils : MinecraftInstance(), Listenable {
 
     val isMoving
         get() = mc.thePlayer?.movementInput?.run { moveForward != 0f || moveStrafe != 0f } ?: false
+    val movingYaw: Float
+        get() = (direction * 180f / Math.PI).toFloat()
 
     val hasMotion
         get() = mc.thePlayer?.run { motionX != .0 || motionY != .0 || motionZ != .0 } ?: false
+
 
     @JvmOverloads
     fun strafe(speed: Float = this.speed, stopWhenNoInput: Boolean = false, moveEvent: MoveEvent? = null) =

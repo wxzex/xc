@@ -18,6 +18,10 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.spec
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.verus.NewVerusLowHop
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.verus.VerusHop
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.verus.VerusLowHop
+import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vulcan.VulcanHopSpeed
+import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vulcan.VulcanLowHopSpeed
+import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vulcan.VulcanYPort2Speed
+import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vulcan.VulcanYPortSpeed
 import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -90,7 +94,13 @@ object Speed : Module("Speed", ModuleCategory.MOVEMENT) {
         Legit,
         CustomSpeed,
         MineBlazeHop,
-        MineBlazeTimer
+        MineBlazeTimer,
+        // Vulcan
+        VulcanHopSpeed,
+        VulcanLowHopSpeed,
+        VulcanYPort2Speed,
+        VulcanYPortSpeed
+
     )
 
     private val modes = speedModes.map { it.modeName }.toTypedArray()
