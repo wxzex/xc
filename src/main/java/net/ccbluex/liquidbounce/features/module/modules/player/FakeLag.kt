@@ -43,6 +43,7 @@ object FakeLag : Module("FakeLag", ModuleCategory.PLAYER, gameDetecting = false)
     private val positions = LinkedHashMap<Vec3, Long>()
     private val resetTimer = MSTimer()
     private var wasNearPlayer = false
+    private var ignoreWholeTick = false
 
     override fun onDisable() {
         if (mc.thePlayer == null)
@@ -62,6 +63,9 @@ object FakeLag : Module("FakeLag", ModuleCategory.PLAYER, gameDetecting = false)
             return
 
         if (distanceToPlayers > 0.0 && wasNearPlayer)
+            return
+
+        if (ignoreWholeTick)
             return
 
         when (packet) {
@@ -130,7 +134,7 @@ object FakeLag : Module("FakeLag", ModuleCategory.PLAYER, gameDetecting = false)
     }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    fun onGameLoop(event: GameLoopEvent) {
         val thePlayer = mc.thePlayer ?: return
 
         if (distanceToPlayers > 0) {
@@ -166,13 +170,14 @@ object FakeLag : Module("FakeLag", ModuleCategory.PLAYER, gameDetecting = false)
             return
 
         handlePackets()
+        ignoreWholeTick = false
     }
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
         val color =
-                if (Breadcrumbs.colorRainbow) rainbow()
-                else Color(Breadcrumbs.colorRed, Breadcrumbs.colorGreen, Breadcrumbs.colorBlue)
+            if (Breadcrumbs.colorRainbow) rainbow()
+            else Color(Breadcrumbs.colorRed, Breadcrumbs.colorGreen, Breadcrumbs.colorBlue)
 
         if (Blink.blinkingSend())
             return
@@ -219,6 +224,7 @@ object FakeLag : Module("FakeLag", ModuleCategory.PLAYER, gameDetecting = false)
 
         packetQueue.clear()
         positions.clear()
+        ignoreWholeTick = true
     }
 
     private fun handlePackets() {
