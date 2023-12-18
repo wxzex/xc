@@ -693,7 +693,7 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
                 0f
             )
 
-            val info = "Blocks: §7$blocksAmount"
+            val info = "blocks: §7$blocksAmount"
             val (width, height) = ScaledResolution(mc)
 
             drawBorderedRect(
@@ -702,8 +702,8 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
                 width / 2 + Fonts.font40.getStringWidth(info) + 2,
                 height / 2 + 16,
                 3,
-                Color.BLACK.rgb,
-                Color.BLACK.rgb
+                Color.TRANSLUCENT,
+                Color.TRANSLUCENT
             )
 
             resetColor()
@@ -1280,4 +1280,3 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
 
     data class ExtraClickInfo(val delay: Int, val lastClick: Long, var clicks: Int)
 }
-
