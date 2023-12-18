@@ -9,11 +9,13 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
-import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.MovementUtils.isOnGround
 import net.ccbluex.liquidbounce.utils.MovementUtils.speed
 import net.ccbluex.liquidbounce.utils.extensions.toDegrees
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextInt
+import net.ccbluex.liquidbounce.utils.realMotionX
+import net.ccbluex.liquidbounce.utils.realMotionY
+import net.ccbluex.liquidbounce.utils.realMotionZ
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -95,7 +97,12 @@ object Velocity : Module("Velocity", ModuleCategory.COMBAT) {
     private var limitUntilJump = 0
 
     override val tag
-        get() = mode
+        get() = if (mode == "Simple" || mode == "Legit") {
+            val horizontalPercentage = (horizontal * 100).toInt()
+            val verticalPercentage = (vertical * 100).toInt()
+
+            "$horizontalPercentage% $verticalPercentage%"
+        } else mode
 
     override fun onDisable() {
         mc.thePlayer?.speedInAir = 0.02F
@@ -319,7 +326,7 @@ object Velocity : Module("Velocity", ModuleCategory.COMBAT) {
         val player = mc.thePlayer ?: return
 
         if (mode == "Jump" && hasReceivedVelocity) {
-            if (nextInt(endExclusive = 100) < chance && shouldJump() && player.isSprinting && player.onGround && player.hurtTime == 9) {
+            if (!player.isJumping && nextInt(endExclusive = 100) < chance && shouldJump() && player.isSprinting && player.onGround && player.hurtTime == 9) {
                 player.jump()
                 limitUntilJump = 0
             }
@@ -413,3 +420,4 @@ object Velocity : Module("Velocity", ModuleCategory.COMBAT) {
         }
     }
 }
+

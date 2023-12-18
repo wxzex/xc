@@ -219,9 +219,13 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
     }
     private val minZitterTicks by minZitterTicksValue
 
+    private val useSneakMidAir by BoolValue("UseSneakMidAir", false) { zitterMode == "Smooth" }
+
     // Game
     private val timer by FloatValue("Timer", 1f, 0.1f..10f)
     private val speedModifier by FloatValue("SpeedModifier", 1f, 0f..2f)
+    private val speedLimiter by BoolValue("SpeedLimiter", false) { !slow }
+    private val speedLimit by FloatValue("SpeedLimit", 0.11f, 0.01f..0.12f) { !slow && speedLimiter }
     private val slow by BoolValue("Slow", false)
     private val slowGround by BoolValue("SlowOnlyGround", false) { slow }
     private val slowSpeed by FloatValue("SlowSpeed", 0.6f, 0.2f..0.8f) { slow }
@@ -250,7 +254,8 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
 
     // Delay
     private val delayTimer = object : DelayTimer(minDelayValue, maxDelayValue, MSTimer()) {
-        override fun hasTimePassed() = !placeDelayValue.isActive() || super.hasTimePassed()
+        override fun hasTimePassed() =
+            !placeDelayValue.isActive() || super.hasTimePassed()
     }
 
     private val zitterTickTimer = TickDelayTimer(minZitterTicksValue, maxZitterTicksValue)
@@ -378,44 +383,6 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
                 strafe(0.2F)
                 player.motionY = 0.0
             }
-
-            when (zitterMode.lowercase()) {
-                "off" -> {
-                    return
-                }
-
-                "smooth" -> {
-                    if (!GameSettings.isKeyDown(mc.gameSettings.keyBindRight)) {
-                        mc.gameSettings.keyBindRight.pressed = false
-                    }
-                    if (!GameSettings.isKeyDown(mc.gameSettings.keyBindLeft)) {
-                        mc.gameSettings.keyBindLeft.pressed = false
-                    }
-
-                    if (zitterTickTimer.hasTimePassed()) {
-                        zitterDirection = !zitterDirection
-                        zitterTickTimer.reset()
-                    } else {
-                        zitterTickTimer.update()
-                    }
-
-                    if (zitterDirection) {
-                        mc.gameSettings.keyBindRight.pressed = true
-                        mc.gameSettings.keyBindLeft.pressed = false
-                    } else {
-                        mc.gameSettings.keyBindRight.pressed = false
-                        mc.gameSettings.keyBindLeft.pressed = true
-                    }
-                }
-
-                "teleport" -> {
-                    strafe(zitterSpeed)
-                    val yaw = (player.rotationYaw + if (zitterDirection) 90.0 else -90.0).toRadians()
-                    player.motionX -= sin(yaw) * zitterStrength
-                    player.motionZ += cos(yaw) * zitterStrength
-                    zitterDirection = !zitterDirection
-                }
-            }
         }
     }
 
@@ -511,11 +478,11 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
             }
 
             setTargetRotation(
-                    rotation,
-                    ticks,
-                    strafe,
-                    resetSpeed = minTurnSpeed to maxTurnSpeed,
-                    angleThresholdForReset = angleThresholdUntilReset
+                rotation,
+                ticks,
+                strafe,
+                resetSpeed = minTurnSpeed to maxTurnSpeed,
+                angleThresholdForReset = angleThresholdUntilReset
             )
 
         } else {
@@ -542,11 +509,11 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
         }
 
         if (!expand && (!isReplaceable(blockPosition) || search(
-                        blockPosition,
-                        !shouldGoDown,
-                        area,
-                        shouldPlaceHorizontally
-                ))
+                blockPosition,
+                !shouldGoDown,
+                area,
+                shouldPlaceHorizontally
+            ))
         ) {
             return
         }
@@ -575,11 +542,11 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
             getCenterDistance(blockPosition.add(it))
         }.forEach {
             if (canBeClicked(blockPosition.add(it)) || search(
-                            blockPosition.add(it),
-                            !shouldGoDown,
-                            area,
-                            shouldPlaceHorizontally
-                    )
+                    blockPosition.add(it),
+                    !shouldGoDown,
+                    area,
+                    shouldPlaceHorizontally
+                )
             ) {
                 return
             }
@@ -646,7 +613,7 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
         val raytrace = performBlockRaytrace(currRotation, mc.playerController.blockReachDistance) ?: return
 
         val canPlaceOnUpperFace = block.canPlaceBlockOnSide(
-                world, raytrace.blockPos, EnumFacing.UP, player, stack
+            world, raytrace.blockPos, EnumFacing.UP, player, stack
         )
 
         val shouldPlace = if (placementAttempt == "Fail") {
@@ -722,27 +689,27 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
             glPushMatrix()
 
             if (BlockOverlay.handleEvents() && BlockOverlay.info && BlockOverlay.currentBlock != null) glTranslatef(0f,
-                    15f,
-                    0f
+                15f,
+                0f
             )
 
             val info = "Blocks: §7$blocksAmount"
             val (width, height) = ScaledResolution(mc)
 
             drawBorderedRect(
-                    width / 2 - 2,
-                    height / 2 + 5,
-                    width / 2 + Fonts.font40.getStringWidth(info) + 2,
-                    height / 2 + 16,
-                    3,
-                    Color.TRANSLUCENT,
-                    Color.TRANSLUCENT,
+                width / 2 - 2,
+                height / 2 + 5,
+                width / 2 + Fonts.font40.getStringWidth(info) + 2,
+                height / 2 + 16,
+                3,
+                Color.BLACK.rgb,
+                Color.BLACK.rgb
             )
 
             resetColor()
 
             Fonts.font40.drawString(
-                    info, width / 2, height / 2 + 7, Color.WHITE.rgb
+                info, width / 2, height / 2 + 7, Color.WHITE.rgb
             )
             glPopMatrix()
         }
@@ -753,7 +720,7 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
     fun onRender3D(event: Render3DEvent) {
         val player = mc.thePlayer ?: return
 
-        val shouldBother = !(shouldGoDown || mode == "Expand" && expandLength > 1) && extraClicks && isMoving
+        val shouldBother = !(shouldGoDown || mode == "Expand" && expandLength > 1) && extraClicks && (isMoving || speed > 0.03)
 
         if (shouldBother) {
             currRotation.let {
@@ -762,9 +729,9 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
 
                     if (raytrace.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && timePassed) {
                         extraClick = ExtraClickInfo(
-                                randomClickDelay(extraClickMinCPS, extraClickMaxCPS),
-                                System.currentTimeMillis(),
-                                extraClick.clicks + 1
+                            randomClickDelay(extraClickMinCPS, extraClickMaxCPS),
+                            System.currentTimeMillis(),
+                            extraClick.clicks + 1
                         )
                     }
                 }
@@ -782,9 +749,9 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
             val x = if (omniDirectionalExpand) -sin(yaw).roundToInt() else player.horizontalFacing.directionVec.x
             val z = if (omniDirectionalExpand) cos(yaw).roundToInt() else player.horizontalFacing.directionVec.z
             val blockPos = BlockPos(
-                    player.posX + x * it,
-                    if (shouldKeepLaunchPosition && launchY <= player.posY) launchY - 1.0 else player.posY - (if (player.posY == player.posY + 0.5) 0.0 else 1.0) - if (shouldGoDown) 1.0 else 0.0,
-                    player.posZ + z * it
+                player.posX + x * it,
+                if (shouldKeepLaunchPosition && launchY <= player.posY) launchY - 1.0 else player.posY - (if (player.posY == player.posY + 0.5) 0.0 else 1.0) - if (shouldGoDown) 1.0 else 0.0,
+                player.posZ + z * it
             )
             val placeInfo = PlaceInfo.get(blockPos)
 
@@ -805,10 +772,10 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
      */
 
     private fun search(
-            blockPosition: BlockPos,
-            raycast: Boolean,
-            area: Boolean,
-            horizontalOnly: Boolean = false
+        blockPosition: BlockPos,
+        raycast: Boolean,
+        area: Boolean,
+        horizontalOnly: Boolean = false
     ): Boolean {
         val player = mc.thePlayer ?: return false
 
@@ -830,7 +797,7 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
             val yaw = round(abs(MathHelper.wrapAngleTo180_float(player.rotationYaw)).roundToInt() / 45f) * 45f
 
             floatArrayOf(45f,
-                    135f
+                135f
             ).any { yaw == it } && player.movementInput.moveForward != 0f && player.movementInput.moveStrafe == 0f
         }
 
@@ -855,7 +822,7 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
                         val raytrace = performBlockRaytrace(rotation, maxReach) ?: continue
 
                         currPlaceRotation =
-                                PlaceRotation(PlaceInfo(raytrace.blockPos, raytrace.sideHit, raytrace.hitVec), rotation)
+                            PlaceRotation(PlaceInfo(raytrace.blockPos, raytrace.sideHit, raytrace.hitVec), rotation)
 
                         if (raytrace.blockPos == neighbor && raytrace.sideHit == side.opposite) {
                             val isInStablePitchRange = if (isLookingDiagonally) {
@@ -879,8 +846,8 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
 
             if (!area) {
                 currPlaceRotation =
-                        findTargetPlace(blockPosition, neighbor, Vec3(0.5, 0.5, 0.5), side, eyes, maxReach, raycast)
-                                ?: continue
+                    findTargetPlace(blockPosition, neighbor, Vec3(0.5, 0.5, 0.5), side, eyes, maxReach, raycast)
+                        ?: continue
 
                 placeRotation = compareDifferences(currPlaceRotation, placeRotation)
             } else {
@@ -888,8 +855,8 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
                     for (y in 0.1..0.9) {
                         for (z in 0.1..0.9) {
                             currPlaceRotation =
-                                    findTargetPlace(blockPosition, neighbor, Vec3(x, y, z), side, eyes, maxReach, raycast)
-                                            ?: continue
+                                findTargetPlace(blockPosition, neighbor, Vec3(x, y, z), side, eyes, maxReach, raycast)
+                                    ?: continue
 
                             placeRotation = compareDifferences(currPlaceRotation, placeRotation)
                         }
@@ -937,7 +904,7 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
             }
 
             val limitedRotation = limitAngleChange(
-                    currRotation, targetRotation, nextFloat(minTurnSpeed, maxTurnSpeed)
+                currRotation, targetRotation, nextFloat(minTurnSpeed, maxTurnSpeed)
             )
 
             setRotation(limitedRotation, if (mode == "Telly") 1 else keepTicks)
@@ -969,12 +936,12 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
     }
 
     private fun findTargetPlace(
-            pos: BlockPos, offsetPos: BlockPos, vec3: Vec3, side: EnumFacing, eyes: Vec3, maxReach: Float, raycast: Boolean
+        pos: BlockPos, offsetPos: BlockPos, vec3: Vec3, side: EnumFacing, eyes: Vec3, maxReach: Float, raycast: Boolean
     ): PlaceRotation? {
         val world = mc.theWorld ?: return null
 
         val vec = (Vec3(pos) + vec3).addVector(
-                side.directionVec.x * vec3.xCoord, side.directionVec.y * vec3.yCoord, side.directionVec.z * vec3.zCoord
+            side.directionVec.x * vec3.xCoord, side.directionVec.y * vec3.yCoord, side.directionVec.z * vec3.zCoord
         )
 
         val distance = eyes.distanceTo(vec)
@@ -1004,9 +971,9 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
         performBlockRaytrace(currRotation, maxReach)?.let { raytrace ->
             if (raytrace.blockPos == offsetPos && (!raycast || raytrace.sideHit == side.opposite)) {
                 return PlaceRotation(
-                        PlaceInfo(
-                                raytrace.blockPos, side.opposite, modifyVec(raytrace.hitVec, side, Vec3(offsetPos), !raycast)
-                        ), currRotation
+                    PlaceInfo(
+                        raytrace.blockPos, side.opposite, modifyVec(raytrace.hitVec, side, Vec3(offsetPos), !raycast)
+                    ), currRotation
                 )
             }
         }
@@ -1015,9 +982,9 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
 
         if (raytrace.blockPos == offsetPos && (!raycast || raytrace.sideHit == side.opposite)) {
             return PlaceRotation(
-                    PlaceInfo(
-                            raytrace.blockPos, side.opposite, modifyVec(raytrace.hitVec, side, Vec3(offsetPos), !raycast)
-                    ), rotation
+                PlaceInfo(
+                    raytrace.blockPos, side.opposite, modifyVec(raytrace.hitVec, side, Vec3(offsetPos), !raycast)
+                ), rotation
             )
         }
 
@@ -1037,11 +1004,11 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
     }
 
     private fun compareDifferences(
-            new: PlaceRotation, old: PlaceRotation?, rotation: Rotation = currRotation
+        new: PlaceRotation, old: PlaceRotation?, rotation: Rotation = currRotation
     ): PlaceRotation {
         if (old == null || getRotationDifference(new.rotation, rotation) < getRotationDifference(
-                        old.rotation, rotation
-                )
+                old.rotation, rotation
+            )
         ) {
             return new
         }
@@ -1075,9 +1042,9 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
 
         // If player is not walking diagonally then continue
         if (round(abs(MathHelper.wrapAngleTo180_float(player.rotationYaw)).roundToInt() / 45f) * 45f !in arrayOf(
-                        135f,
-                        45f
-                ) || player.movementInput.moveForward == 0f || player.movementInput.moveStrafe != 0f
+                135f,
+                45f
+            ) || player.movementInput.moveForward == 0f || player.movementInput.moveStrafe != 0f
         ) {
             val (posX, posY, posZ) = player.interpolatedPosition()
 
@@ -1168,11 +1135,11 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
     }
 
     private fun tryToPlaceBlock(
-            stack: ItemStack,
-            clickPos: BlockPos,
-            side: EnumFacing,
-            hitVec: Vec3,
-            attempt: Boolean = false
+        stack: ItemStack,
+        clickPos: BlockPos,
+        side: EnumFacing,
+        hitVec: Vec3,
+        attempt: Boolean = false
     ): Boolean {
         val thePlayer = mc.thePlayer ?: return false
 
@@ -1212,6 +1179,82 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
         return clickedSuccessfully
     }
 
+    fun handleMovementOptions(input: MovementInput) {
+        if (!state) {
+            return
+        }
+
+        if (!slow && speedLimiter && speed > speedLimit) {
+            input.moveStrafe = 0f
+            input.moveForward = 0f
+            return
+        }
+
+        val player = mc.thePlayer ?: return
+
+        when (zitterMode.lowercase()) {
+            "off" -> {
+                return
+            }
+
+            "smooth" -> {
+                val notOnGround = !player.onGround || !player.isCollidedVertically
+
+                if (player.onGround) {
+                    mc.gameSettings.keyBindSneak.pressed = eagleSneaking || GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)
+                }
+
+                if (input.jump || mc.gameSettings.keyBindJump.isKeyDown || notOnGround) {
+                    zitterTickTimer.reset()
+
+                    if (useSneakMidAir) {
+                        mc.gameSettings.keyBindSneak.pressed = true
+                    }
+
+                    if (!notOnGround && !input.jump) {
+                        // Attempt to move against the direction
+                        input.moveStrafe = if (zitterDirection) 1f else -1f
+                    } else {
+                        input.moveStrafe = 0f
+                    }
+
+                    zitterDirection = !zitterDirection
+
+                    // Recreate input in case the user was indeed pressing inputs
+                    if (mc.gameSettings.keyBindLeft.isKeyDown) {
+                        input.moveStrafe++
+                    }
+
+                    if (mc.gameSettings.keyBindRight.isKeyDown) {
+                        input.moveStrafe--
+                    }
+                    return
+                }
+
+                if (zitterTickTimer.hasTimePassed()) {
+                    zitterDirection = !zitterDirection
+                    zitterTickTimer.reset()
+                } else {
+                    zitterTickTimer.update()
+                }
+
+                if (zitterDirection) {
+                    input.moveStrafe = -1f
+                } else {
+                    input.moveStrafe = 1f
+                }
+            }
+
+            "teleport" -> {
+                strafe(zitterSpeed)
+                val yaw = (player.rotationYaw + if (zitterDirection) 90.0 else -90.0).toRadians()
+                player.motionX -= sin(yaw) * zitterStrength
+                player.motionZ += cos(yaw) * zitterStrength
+                zitterDirection = !zitterDirection
+            }
+        }
+    }
+
     /**
      * Returns the amount of blocks
      */
@@ -1237,3 +1280,4 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
 
     data class ExtraClickInfo(val delay: Int, val lastClick: Long, var clicks: Int)
 }
+
