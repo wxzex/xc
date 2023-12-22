@@ -207,7 +207,8 @@ object ModuleManager : Listenable {
             WallClimb,
             WaterSpeed,
             XRay,
-            Zoot
+            Zoot,
+            KeepSprint,
         )
 
         InventoryManager.startCoroutine()
