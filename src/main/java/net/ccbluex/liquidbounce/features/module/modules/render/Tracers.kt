@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot.isBot
+import net.ccbluex.liquidbounce.features.module.modules.misc.Teams
 import net.ccbluex.liquidbounce.utils.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.extensions.isClientFriend
 import net.ccbluex.liquidbounce.utils.extensions.toRadians
@@ -29,13 +30,14 @@ import java.awt.Color
 object Tracers : Module("Tracers", ModuleCategory.RENDER) {
 
     private val colorMode by ListValue("Color", arrayOf("Custom", "DistanceColor", "Rainbow"), "Custom")
-        private val colorRed by IntegerValue("R", 0, 0..255) { colorMode == "Custom" }
-        private val colorGreen by IntegerValue("G", 160, 0..255) { colorMode == "Custom" }
-        private val colorBlue by IntegerValue("B", 255, 0..255) { colorMode == "Custom" }
+    private val colorRed by IntegerValue("R", 0, 0..255) { colorMode == "Custom" }
+    private val colorGreen by IntegerValue("G", 160, 0..255) { colorMode == "Custom" }
+    private val colorBlue by IntegerValue("B", 255, 0..255) { colorMode == "Custom" }
 
     private val thickness by FloatValue("Thickness", 2F, 1F..5F)
 
     private val bot by BoolValue("Bots", true)
+    private val teams by BoolValue("Teams", false)
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
@@ -59,6 +61,7 @@ object Tracers : Module("Tracers", ModuleCategory.RENDER) {
                 val colorMode = colorMode.lowercase()
                 val color = when {
                     entity is EntityPlayer && entity.isClientFriend() -> Color(0, 0, 255, 150)
+                    teams && Teams.state && Teams.isInYourTeam(entity) -> Color(0, 162, 232)
                     colorMode == "custom" -> Color(colorRed, colorGreen, colorBlue, 150)
                     colorMode == "distancecolor" -> Color(255 - dist, dist, 0, 150)
                     colorMode == "rainbow" -> ColorUtils.rainbow()
@@ -90,8 +93,8 @@ object Tracers : Module("Tracers", ModuleCategory.RENDER) {
                 - mc.renderManager.renderPosZ)
 
         val eyeVector = Vec3(0.0, 0.0, 1.0)
-            .rotatePitch(-thePlayer.rotationPitch.toRadians())
-            .rotateYaw(-thePlayer.rotationYaw.toRadians())
+                .rotatePitch(-thePlayer.rotationPitch.toRadians())
+                .rotateYaw(-thePlayer.rotationYaw.toRadians())
 
         glColor(color)
 

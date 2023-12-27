@@ -49,7 +49,7 @@ object Nuker : Module("Nuker", ModuleCategory.WORLD, gameDetecting = false) {
     private val priority by ListValue("Priority", arrayOf("Distance", "Hardness"), "Distance")
 
     private val rotations by BoolValue("Rotations", true)
-        private val strafe by ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Off") { rotations }
+    private val strafe by ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Off") { rotations }
 
     private val layer by BoolValue("Layer", false)
     private val hitDelay by IntegerValue("HitDelay", 4, 0..20)
@@ -93,7 +93,7 @@ object Nuker : Module("Nuker", ModuleCategory.WORLD, gameDetecting = false) {
             // Default nuker
 
             val eyesPos = thePlayer.eyes
-            val validBlocks = searchBlocks(radius.roundToInt() + 1).filter { (pos, block) ->
+            val validBlocks = searchBlocks(radius.roundToInt() + 1, null).filter { (pos, block) ->
                 if (getCenterDistance(pos) <= radius && validBlock(block)) {
                     if (layer && pos.y < thePlayer.posY) { // Layer: Break all blocks above you
                         return@filter false
@@ -103,8 +103,8 @@ object Nuker : Module("Nuker", ModuleCategory.WORLD, gameDetecting = false) {
                         // Raytrace player eyes to block position (through walls check)
                         val blockVec = Vec3(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5)
                         val rayTrace = mc.theWorld.rayTraceBlocks(
-                            eyesPos, blockVec,
-                            false, true, false
+                                eyesPos, blockVec,
+                                false, true, false
                         )
 
                         // Check if block is visible
@@ -194,34 +194,34 @@ object Nuker : Module("Nuker", ModuleCategory.WORLD, gameDetecting = false) {
                 return
 
             // Search for new blocks to break
-            searchBlocks(radius.roundToInt() + 1)
-                .filter { (pos, block) ->
-                    if (getCenterDistance(pos) <= radius && validBlock(block)) {
-                        if (layer && pos.y < thePlayer.posY) { // Layer: Break all blocks above you
-                            return@filter false
-                        }
+            searchBlocks(radius.roundToInt() + 1, null)
+                    .filter { (pos, block) ->
+                        if (getCenterDistance(pos) <= radius && validBlock(block)) {
+                            if (layer && pos.y < thePlayer.posY) { // Layer: Break all blocks above you
+                                return@filter false
+                            }
 
-                        if (!throughWalls) { // ThroughWalls: Just break blocks in your sight
-                            // Raytrace player eyes to block position (through walls check)
-                            val eyesPos = thePlayer.eyes
-                            val blockVec = Vec3(thePlayer.position)
-                            val rayTrace = mc.theWorld.rayTraceBlocks(
-                                eyesPos, blockVec,
-                                false, true, false
-                            )
+                            if (!throughWalls) { // ThroughWalls: Just break blocks in your sight
+                                // Raytrace player eyes to block position (through walls check)
+                                val eyesPos = thePlayer.eyes
+                                val blockVec = Vec3(thePlayer.position)
+                                val rayTrace = mc.theWorld.rayTraceBlocks(
+                                        eyesPos, blockVec,
+                                        false, true, false
+                                )
 
-                            // Check if block is visible
-                            rayTrace != null && rayTrace.blockPos == pos
-                        } else true // Done
-                    } else false // Bad block
-                }
-                .forEach { (pos, _) ->
-                    // Instant break block
-                    sendPacket(C07PacketPlayerDigging(START_DESTROY_BLOCK, pos, EnumFacing.DOWN))
-                    thePlayer.swingItem()
-                    sendPacket(C07PacketPlayerDigging(STOP_DESTROY_BLOCK, pos, EnumFacing.DOWN))
-                    attackedBlocks += pos
-                }
+                                // Check if block is visible
+                                rayTrace != null && rayTrace.blockPos == pos
+                            } else true // Done
+                        } else false // Bad block
+                    }
+                    .forEach { (pos, _) ->
+                        // Instant break block
+                        sendPacket(C07PacketPlayerDigging(START_DESTROY_BLOCK, pos, EnumFacing.DOWN))
+                        thePlayer.swingItem()
+                        sendPacket(C07PacketPlayerDigging(STOP_DESTROY_BLOCK, pos, EnumFacing.DOWN))
+                        attackedBlocks += pos
+                    }
         }
     }
 
